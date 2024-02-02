@@ -3,6 +3,10 @@
 
 
 
+## Dockerfile and env
+- The application, frontend, database and cache are defined in the docker-compose file using a `backend` bridge network.
+- I'm submitting the .env file to the repository to facilitate the testing, but on a real world scenario we shouldn't commit the .env file and use `.env.example` as best practice.
+
 
 ## Data model
 
