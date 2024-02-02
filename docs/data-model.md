@@ -1,16 +1,14 @@
 # Data model
 
-## Overview
-
 This section describes the Data model for each database (MySQL and Redis), which includes only the Subscriber entity.
 
-## MySQL data model
+# MySQL data model
 
 ![ER Diagram]TODO add diagram
 
-## Entities Description
+### Entities Description
 
-### Subscriber
+#### Subscribers
 - **Attributes**:
   - `id`: Primary Key
   - `email`: Email of the subscriber `VARCHAR(255)`
@@ -20,7 +18,7 @@ This section describes the Data model for each database (MySQL and Redis), which
   - `created_at`: Creation timestamp of the subscriber
   - `updated_at`: Update timestamp of the subscriber
 
-### Statuses
+#### Statuses
 - **Attributes**
   - `id`: Primary Key
   - `name`: Name of the status `VARCHAR(40)`
@@ -29,22 +27,16 @@ This section describes the Data model for each database (MySQL and Redis), which
 
 > The possible statuses were not specified in the task requirements, so it's assumed that its a string of max-size: 40, that is populated in the statuses table. This was a developer's decision to make the status table flexible enough for adding or modifying existing statuses.
 
-### Developer Decisions
+#### Developer Decisions
 Check [Data model decisions](./decisions.md#data-model)
 
 ----------
-
-## Redis Data Model
-- Stored as key-value pairs, where the key is the subscriber email and the value is the `subscriber` object.
-
-----------
-
 
 # MySQL Database Storage Calculation
 
 Assuming that the statuses table will not grow a lot, and that would have around 100+- statuses for example. The grow factor of our database is basically the subscribers table.
 
-TLDR; `Subscriber row ≈ 784 bytes`
+**TLDR**; `Subscriber row ≈ 784 bytes`
 
 | Database capacity     | Subscribers      | 
 |-----------------------|------------------|
@@ -56,17 +48,18 @@ TLDR; `Subscriber row ≈ 784 bytes`
 [Reference](https://dev.mysql.com/doc/refman/8.0/en/storage-requirements.html)
 ----------
 
-## Considerations:
+### Considerations:
 
 1. **Row Overhead**: There is a small overhead per row and additional storage requirements for table metadata - We are not considering that on the calculation.
 2. **Data Distribution**: These calculations are assuming that we use every space available of each VARCHAR fields. So, actual data may consume less space.
 3. **Index Size**: These calculations do not account for the additional storage used by indexes (like the one on `email` in the `subscriber` table). This is just to have a general idea of capacity planing.
 4. **Grow factor**: We are not considering the statuses table here, as its growth should not be great.
 
---
+----------
+
+#### Table: `subscribers`
 Let's calculate the storage requirements for each row in `subscriber` tables (using MySQL 5.7):
 
-## Table: `subscribers`
 
 | Column      | Data Type  | Size (bytes) | Description |
 |-------------|------------|--------------|-------------|
@@ -80,7 +73,7 @@ Let's calculate the storage requirements for each row in `subscriber` tables (us
 
 **Total bytes per row for `subscriber`:** 784 bytes/row
 
-## Storage Calculation for 1MB, 100MB, and 1GB
+#### Storage Calculation for 1MB, 100MB, and 1GB
 
 - **1MB (1,048,576 bytes) Capacity:**
   - `subscriber`: 1,048,576 / 784 ≈ 1,337 rows
@@ -91,10 +84,15 @@ Let's calculate the storage requirements for each row in `subscriber` tables (us
 - **1GB (1,073,741,824 bytes) Capacity:**
   - `subscriber`: 1,073,741,824 / 784 ≈ 1,369,156 rows
 
+----------
+
+# Redis Data Model
+- Stored as key-value pairs, where the key is the subscriber email and the value is the `subscriber` object.
 
 
 
-
+# Redis Database Storage Calculation
+- TODO
 
 
 
