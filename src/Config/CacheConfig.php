@@ -3,8 +3,10 @@
 namespace App\Config;
 
 return array(
-    'host' => getenv('CACHE_HOST') ?: '127.0.0.1',
-    'port' => getEnv('CACHE_PORT') ?: '6379',
-    'username' => getenv('DB_USERNAME') ?: null,
-    'password' => getenv('DB_PASSWORD') ?: null
+    'redis' => array(
+        'host' => getenv('REDIS_HOST') ?: '127.0.0.1',
+        'port' => getenv('REDIS_PORT') ?: '6379',
+        'username' => getenv('REDIS_USERNAME') ?: null,
+        'password' => getenv('REDIS_PASSWORD') ?: null
+    ),
 );

@@ -3,8 +3,11 @@
 namespace App\Config;
 
 return array(
-    'host' => getenv('DB_HOST') ?: 'localhost',
-    'dbname' => getenv('DB_NAME') ?: 'default',
-    'username' => getenv('DB_USERNAME') ?: 'default_username',
-    'password' => getenv('DB_PASSWORD') ?: 'defaul_password'
+    'mysql' => array(
+        'host' => getenv('MYSQL_HOST') ?: 'localhost',
+        'dbname' => getenv('MYSQL_DBNAME') ?: 'default',
+        'username' => getenv('MYSQL_USERNAME') ?: 'default_username',
+    'password' => getenv('MYSQL_PASSWORD') ?: 'default_password',
+        'port' => getenv('MYSQL_PORT') ?: '3306',
+    ),
 );
