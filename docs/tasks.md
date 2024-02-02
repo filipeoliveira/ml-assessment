@@ -1,7 +1,7 @@
 # MailerLite Challenge
 
 ## Overview
-On MailerLite we store millions and millions of subscribers for our users. This challenge involves designing and implementing a scalable endpoint to handle these subscribers efficiently.
+At MailerLite we store millions and millions of subscribers for our users. This challenge involves designing and implementing a scalable endpoint to handle these subscribers efficiently.
 
 ## Task Description
 

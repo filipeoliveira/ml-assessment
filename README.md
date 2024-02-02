@@ -1,8 +1,8 @@
-# Mailerlite asessment
+# Mailerlite assessment
 
 ![Mailerlite logo](https://upload.wikimedia.org/wikipedia/commons/5/5e/MailerLite_Logo.svg)
 
-On MailerLite we store millions and millions of subscribers for our users. This challenge involves designing and implementing a scalable endpoint to handle these subscribers efficiently.
+At MailerLite we store millions and millions of subscribers for our users. This challenge involves designing and implementing a scalable endpoint to handle these subscribers efficiently.
 
 [Task information](docs/tasks.md)
 
