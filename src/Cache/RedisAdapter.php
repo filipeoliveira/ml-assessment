@@ -13,11 +13,9 @@ class RedisAdapter implements CacheInterface {
     }
 
     public function set($key, $value, $ttl = null) {
-        // TODO - Implement set method using Redis
     }
 
     public function delete($key) {
-        // TODO - Implement delete method using Redis
     }
 
 }
