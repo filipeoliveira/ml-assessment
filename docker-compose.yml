@@ -14,11 +14,11 @@ services:
     env_file:
       - .env
     environment:
-      DB_HOST: ${DB_HOST}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
-      CACHE_HOST: ${CACHE_HOST}
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_DBNAME: ${MYSQL_DBNAME}
+      MYSQL_USERNAME: ${MYSQL_USERNAME}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      REDIS_HOST: redis_cache
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost"]
       interval: 15s
@@ -37,7 +37,7 @@ services:
       - .env
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_DATABASE: ${MYSQL_DBNAME}
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
       interval: 30s
