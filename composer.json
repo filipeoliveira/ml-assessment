@@ -1,0 +1,25 @@
+{
+    "name": "filipeoliveira/mailerlite-assessment",
+    "description": "PHP assessment for ML to get and write subscribers to a database.",
+    "type": "project",
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.8"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Filipe Oliveira",
+            "email": "filipe.jtoliveira@gmail.com"
+        }
+    ],
+    "minimum-stability": "RC",
+    "require": {
+        "php": "^8.0",
+        "vlucas/phpdotenv": "^5.6"
+    }
+}
