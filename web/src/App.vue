@@ -1,13 +1,12 @@
 <template>
-  <MainLayout>
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App" />
-
-  </MainLayout>
+  <div class="full">
+    <MainLayout>
+    </MainLayout>
+  </div>
 </template>
 
 <script lang="ts">
-import MainLayout from './components/MainLayout.vue'
+import MainLayout from './components/layout/MainLayout.vue'
 
 export default {
   name: 'App',
@@ -19,4 +18,9 @@ export default {
 
 <style lang="scss">
 @import 'assets/styles/main.scss';
+
+.full {
+  background-color: green;
+  height: 100vh;
+}
 </style>
