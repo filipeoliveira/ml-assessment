@@ -1,6 +1,7 @@
 version: '3'
 services:
-  web:
+
+  backend-app:
     build: .
     ports:
       - "8080:80"
@@ -11,6 +12,7 @@ services:
       - redis_cache
     networks:
       - backend
+      - frontend
     env_file:
       - .env
     environment:
@@ -51,6 +53,21 @@ services:
     networks:
       - backend
 
+  frontend-app:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    environment:
+      - BACKEND_URL=http://backend-app:8000
+    ports:
+      - "8080:80"
+    networks:
+      - frontend
+      - backend
+    depends_on:
+      - backend-app
+
 networks:
+  frontend:
   backend:
    driver: bridge
