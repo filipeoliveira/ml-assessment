@@ -10,17 +10,26 @@ class Validator
     const BAD_REQUEST = 400;
 
     /**
-     * Validates a value against a set of rules.
+     * Validates an array of values against a set of rules.
      *
-     * @param mixed $value The value to validate.
+     * @param array $values The values to validate.
      * @param array $rules The rules to validate against.
-     * @param string $fieldName The name of the field being validated.
-     * @throws ValidationException If the value fails any of the rules.
+     * @throws ValidationException If any value fails any of its rules.
      */
-    public static function validate($value, $rules, $fieldName)
+    public static function validate($values, $rules)
     {
-        foreach ($rules as $rule) {
-            self::applyRule($rule, $value, $fieldName);
+        foreach ($rules as $fieldName => $fieldRules) {
+            if (!isset($values[$fieldName])) {
+                throw new ValidationException(
+                    sprintf(ErrorCode::MISSING_VALUE['message'], $fieldName),
+                    self::BAD_REQUEST
+                );
+            }
+
+            $value = $values[$fieldName];
+            foreach ($fieldRules as $rule) {
+                self::applyRule($rule, $value, $fieldName);
+            }
         }
     }
 
@@ -38,12 +47,13 @@ class Validator
             case 'required':
                 self::validateRequired($value, $fieldName);
                 break;
-            case 'numeric':
-                self::validateNumeric($value, $fieldName);
+            case 'integer':
+                self::validateInteger($value, $fieldName);
                 break;
             case 'string':
                 self::validateString($value, $fieldName);
                 break;
+                //TODO add email check
             case 'status_enum':
                 self::validateStatusEnum($value, $fieldName);
                 break;
@@ -73,17 +83,17 @@ class Validator
     }
 
     /**
-     * Validates that a value is numeric.
+     * Validates that a value is integer.
      *
      * @param mixed $value The value to validate.
      * @param string $fieldName The name of the field being validated.
-     * @throws ValidationException If the value is not numeric.
+     * @throws ValidationException If the value is not integer.
      */
-    private static function validateNumeric($value, $fieldName)
+    private static function validateInteger($value, $fieldName)
     {
-        if (!is_numeric($value)) {
+        if (!is_integer($value)) {
             throw new ValidationException(
-                sprintf(ErrorCode::NOT_NUMERIC['message'], $fieldName),
+                sprintf(ErrorCode::NOT_INTEGER['message'], $fieldName),
                 self::BAD_REQUEST
             );
         }

@@ -9,9 +9,19 @@ class ErrorCode
         'message' => 'Invalid subscriber ID'
     ];
 
+    const INVALID_STATUS_ID = [
+        'code' => 'Error.InvalidStatusId',
+        'message' => 'Invalid status ID'
+    ];
+
     const SUBSCRIBER_NOT_FOUND = [
         'code' => 'Error.SubscriberNotFound',
         'message' => 'Subscriber not found'
+    ];
+
+    const STATUS_NOT_FOUND = [
+        'code' => 'Error.StatusNotFound',
+        'message' => 'Status not found'
     ];
 
     const MISSING_VALUE = [
@@ -19,9 +29,9 @@ class ErrorCode
         'message' => 'The %s is required and was not provided.'
     ];
 
-    const NOT_NUMERIC = [
-        'code' => 'ERR_NOT_NUMERIC',
-        'message' => 'The %s must be numeric.'
+    const NOT_INTEGER = [
+        'code' => 'ERR_NOT_INTEGER',
+        'message' => 'The %s must be integer.'
     ];
 
     const NOT_STRING = [
