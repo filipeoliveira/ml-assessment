@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Service;
+namespace App\Services;
 
-use App\Repository\SubscriberRepository;
+use App\Repositories\SubscriberRepository;
 use App\Models\Subscriber;
 
 class SubscriberService
@@ -14,32 +14,21 @@ class SubscriberService
      *
      * Initializes a new instance of the SubscriberRepository.
      */
-    public function __construct()
+    public function __construct(SubscriberRepository $subscriberRepository)
     {
-        $this->subscriberRepository = new SubscriberRepository();
+        $this->subscriberRepository = $subscriberRepository;
     }
 
     /**
      * Retrieves all subscribers with pagination.
      *
      * @param int $page The page number (default is 0).
-     * @param int $pageSize The number of items per page (default is 25).
+     * @param int $pageSize The number of items per page (default is 10).
      * @return array The subscribers.
      */
-    public function getAll($page = 0, $pageSize = 25)
+    public function getAll($page = 0, $pageSize = 10)
     {
         return $this->subscriberRepository->getAll($page, $pageSize);
-    }
-
-    /**
-     * Retrieves a subscriber by ID.
-     *
-     * @param int $id The ID of the subscriber.
-     * @return array|null The subscriber, or null if the subscriber was not found.
-     */
-    public function getbyId($id)
-    {
-        return $this->subscriberRepository->getbyId($id);
     }
 
     /**
@@ -53,6 +42,7 @@ class SubscriberService
      */
     public function create(Subscriber $subscriber)
     {
+
         $email = $subscriber->getEmail();
         $existingSubscriber = $this->subscriberRepository->getByEmail($email);
 
@@ -62,5 +52,16 @@ class SubscriberService
         }
 
         return false;
+    }
+
+    /**
+     * Retrieves a subscriber by email.
+     *
+     * @param string $email The email of the subscriber.
+     * @return Subscriber|null The subscriber, or null if no subscriber was found.
+     */
+    public function getByEmail($email)
+    {
+        return $this->subscriberRepository->getByEmail($email);
     }
 }

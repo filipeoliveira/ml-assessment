@@ -1,27 +1,24 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controllers;
 
 use App\Models\Subscriber;
-use App\Service\SubscriberService;
-use App\Utilities\Errors\ErrorCode;
 use App\Utilities\Validation\Validator;
-use App\Service\StatusService;
+use App\Utilities\Errors\ErrorCode;
+use Pimple\Container;
 
 class SubscriberController
 {
     private $subscriberService;
-    private $statusService;
 
     /**
      * SubscriberController constructor.
      *
      * Initializes a new instance of the SubscriberService.
      */
-    public function __construct()
+    public function __construct(Container $container)
     {
-        $this->subscriberService = new SubscriberService();
-        $this->statusService = new StatusService();
+        $this->subscriberService = $container['subscriberService'];
     }
 
     /**
@@ -42,33 +39,27 @@ class SubscriberController
     }
 
     /**
-     * Retrieves a subscriber by ID.
+     * Retrieves a subscriber by email.
      *
-     * The ID is validated to be a required integer value.
-     * If the ID is not valid, a validation error is thrown.
-     * If the subscriber is not found, a 404 error is returned.
-     *
-     * @param array $request The request parameters.
      * @return \Illuminate\Http\JsonResponse The response.
      */
-    public function getById()
+    public function getByEmail($email)
     {
-        $request = $_GET;
+        // Validate the parameters in the request
         $rules = [
-            'id' => [
-                "required", "integer"
-            ],
+            'email' => ['required', 'email', 'length:255'],
         ];
+        $request['email'] = $email;
         Validator::validate($request, $rules);
-        $id = $_GET["id"];
-        $subscriber = $this->subscriberService->getById($id);
+        $subscriber = $this->subscriberService->getByEmail($request['email']);
 
-        if ($subscriber === null) {
-            return response()->json(['error' => ErrorCode::SUBSCRIBER_NOT_FOUND], 404);
+        if ($subscriber) {
+            return response()->json($subscriber, 200);
         }
 
-        return response()->json($subscriber);
+        return response()->json(ErrorCode::SUBSCRIBER_NOT_FOUND, 404);
     }
+
 
     /**
      * Creates a new subscriber.
@@ -84,24 +75,23 @@ class SubscriberController
     {
         // Validate the parameters in the request
         $rules = [
-            'email' => ['required', 'email'],
-            'name' => ['required', 'string'],
-            'last_name' => ['required', 'string'],
-            'status_id' => ['exists:statuses,id'],
+            'email' => ['required', 'email', 'length:255'],
+            'name' => ['required', 'string', 'length:255'],
+            'last_name' => ['required', 'string', 'length:255'],
+            'status' => ['required', 'string', 'length:255'],
         ];
-        $request = $_POST;
-        Validator::validate($request, $rules);
+
+        $data = parsePostData($_SERVER['CONTENT_TYPE']);
+        Validator::validate($data, $rules);
 
         // Create the subscriber
-        $status = $this->statusService->getById($request['status_id']);
-        $subscriber = new Subscriber($request['email'], $request['name'], $request['last_name'], $status);
-
+        $subscriber = new Subscriber($data['email'], $data['name'], $data['last_name'], $data['status']);
         $isNewSubscriber = $this->subscriberService->create($subscriber);
 
         if ($isNewSubscriber) {
             return response()->json($subscriber, 201);
         }
 
-        return response()->json(['message' => 'Subscriber already exists'], 200);
+        return response()->json(ErrorCode::SUBSCRIBER_ALREADY_EXISTS, 200);
     }
 }

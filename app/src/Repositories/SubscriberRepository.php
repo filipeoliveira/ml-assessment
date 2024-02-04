@@ -1,14 +1,11 @@
 <?php
 
-namespace App\Repository;
+namespace App\Repositories;
 
 use App\Config\CacheConfig;
 use App\Models\Subscriber;
-use App\Models\Status;
 use App\Connection\DatabaseConnection;
 use App\Connection\CacheConnection;
-use App\Repositories\StatusRepository;
-use App\Utilities\Errors\ErrorCode;
 use App\Utilities\Exceptions\DatabaseException;
 
 class SubscriberRepository
@@ -16,16 +13,16 @@ class SubscriberRepository
     private $db;
     private $cache;
 
-    public function __construct()
+    public function __construct(DatabaseConnection $db, CacheConnection $cache)
     {
-        $this->db = DatabaseConnection::getInstance()->getConnection();
-        $this->cache = CacheConnection::getInstance()->getConnection();
+        $this->db = $db->getConnection();
+        $this->cache = $cache->getConnection();
     }
 
     /**
      * Retrieves a paginated list of all subscribers.
      *
-     * This method retrieves all subscribers from the database, along with their associated status information.
+     * This method retrieves all subscribers from the database.
      * The results are paginated according to the provided page number and page size.
      * Each row of data is mapped to a Subscriber object.
      *
@@ -36,10 +33,14 @@ class SubscriberRepository
      */
     public function getAll($page, $pageSize)
     {
+
+        $page = $page > 1 ? $page : 1;
+        $pageSize = $pageSize > 1 ? $pageSize : 1;
+
         try {
-            $stmt = $this->db->prepare("SELECT s.*, st.name as status_name, st.id as status_id FROM subscribers s
-                                        LEFT JOIN statuses st ON s.status_id = st.id
+            $stmt = $this->db->prepare("SELECT * FROM subscribers s
                                         LIMIT :offset, :limit");
+
             $offset = ($page - 1) * $pageSize;
             $stmt->bindParam(':offset', $offset, \PDO::PARAM_INT);
             $stmt->bindParam(':limit', $pageSize, \PDO::PARAM_INT);
@@ -57,90 +58,42 @@ class SubscriberRepository
         return $subscribers;
     }
 
-    /**
-     * Retrieves a subscriber by ID.
-     *
-     * @param int $id The ID of the subscriber.
-     * @return Subscriber|null The subscriber, or null if the subscriber was not found.
-     */
-    public function getById($id)
-    {
-        $cacheKeyId = CacheConfig::SUBSCRIBER_ID_KEY . $id;
-        $subscriber = $this->cache->get($cacheKeyId);
-
-        if ($subscriber === false) {
-            try {
-                $query = "SELECT s.*, st.id, as status_id, st.name as status_name FROM subscribers s
-                LEFT JOIN statuses st ON s.status_id = st.id
-                WHERE s.id = :id";
-
-                $stmt = $this->db->prepare($query);
-                $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
-                $stmt->execute();
-                $data = $stmt->fetch();
-
-                if ($data === false) {
-                    return null;
-                }
-
-                $subscriber = $this->mapDataToSubscriber($data);
-                $cacheKeyEmail = CacheConfig::SUBSCRIBER_ID_KEY . $subscriber->getEmail();
-
-                // Populate associative cache
-                $this->cache->set($cacheKeyId, json_encode($data));
-                $this->cache->set($cacheKeyEmail, $id);
-
-                return $subscriber;
-            } catch (\PDOException $e) {
-                throw new DatabaseException($e->getMessage(), 500, $e);
-            }
-        }
-
-        return $subscriber;
-    }
-
 
     /**
-     * Retrieves a subscriber by ID.
+     * Retrieves a subscriber by Email.
      *
-     * @param int $id The ID of the subscriber.
+     * @param int $id The Email of the subscriber.
      * @return Subscriber|null The subscriber, or null if the subscriber was not found.
      */
     public function getByEmail($email)
     {
         $email = strtolower($email);
         $cacheKeyEmail = CacheConfig::SUBSCRIBER_EMAIL_KEY . $email;
-        $subscriberId = $this->cache->get($cacheKeyEmail);
+        $cacheData = $this->cache->get($cacheKeyEmail);
 
-        // If the subscriber ID was found in the cache, try to get the subscriber data
-        if ($subscriberId !== false) {
-            $cacheKeyId = CacheConfig::SUBSCRIBER_ID_KEY . $subscriberId;
-            $subscriberData = json_decode($this->cache->get($cacheKeyId), true);
-
-            if ($subscriberData !== false) {
-                return $this->mapDataToSubscriber($subscriberData);
+        if ($cacheData !== null) {
+            $subscriberData = json_decode($cacheData);
+            if ($subscriberData !== null) {
+                return $subscriberData;
             }
         }
 
         // If the subscriber was not found in the cache, retrieve it from the database
         try {
-            $stmt = $this->db->prepare("SELECT s.*, st.name as status_name, st.id as status_id FROM subscribers s
-                                        LEFT JOIN statuses st ON s.status_id = st.id
+            $stmt = $this->db->prepare("SELECT * FROM subscribers s
                                         WHERE s.email = :email");
             $stmt->bindParam(':email', $email, \PDO::PARAM_STR);
             $stmt->execute();
-            $subscriberData = $stmt->fetch();
+            $data = $stmt->fetch();
 
-            if ($subscriberData === false) {
+            if ($data === false) {
                 return null;
             }
 
-            $subscriber = $this->mapDataToSubscriber($subscriberData);
-            $cacheKeyId = CacheConfig::SUBSCRIBER_ID_KEY . $subscriberId;
+            $subscriber = $this->mapDataToSubscriber($data);
 
-            // Store the subscriber ID and data in the cache
-            $this->cache->set($cacheKeyId, json_encode($subscriberData));
-            $this->cache->set($cacheKeyEmail, $subscriber['id']);
+            // Store the subscriber in the cache
+            $this->cache->set($cacheKeyEmail, json_encode($subscriber));
         } catch (\PDOException $e) {
             throw new DatabaseException($e->getMessage(), 500, $e);
         }
@@ -160,32 +113,13 @@ class SubscriberRepository
             $this->db->beginTransaction();
 
             $email = strtolower($subscriber->getEmail());
+            $name = $subscriber->getName();
+            $lastName = $subscriber->getLastName();
+            $status = strtolower($subscriber->getStatus());
 
             // Check if exists a subscriber with the provided email.
-            $stmt = $this->db->prepare("SELECT * FROM subscribers WHERE email = :email");
-            $stmt->bindParam(':email', $email);
-            $stmt->execute();
-            $existingSubscriber = $stmt->fetch();
-
-            if ($existingSubscriber === false) {
-
-                // Check if exists a status with the provided status_id.
-                $stmt = $this->db->prepare("SELECT * FROM statuses WHERE id = :status_id");
-                $stmt->bindParam(':status_id', $subscriber->getStatus()->getId());
-                $stmt->execute();
-                $status = $stmt->fetch();
-
-                if ($status === false) {
-                    throw new DatabaseException(ErrorCode::INVALID_STATUS_ID['message'], 500);
-                }
-
-                $stmt = $this->db->prepare("INSERT INTO subscribers (email, name, last_name, status_id)
-                    VALUES (:email, :name, :last_name, :status_id)");
-                $stmt->bindParam(':email', $subscriber->getEmail());
-                $stmt->bindParam(':name', $subscriber->getName());
-                $stmt->bindParam(':last_name', $subscriber->getLastName());
-                $stmt->bindParam(':status_id', $subscriber->status->getId());
-                $stmt->execute();
+            if (!$this->subscriberExists($email)) {
+                $this->insertSubscriber($email, $name, $lastName, $status);
             }
 
             $this->db->commit();
@@ -196,6 +130,39 @@ class SubscriberRepository
     }
 
     /**
+     * Checks if a subscriber with the given email exists.
+     *
+     * @param string $email The email to check.
+     * @return bool True if the subscriber exists, false otherwise.
+     */
+    private function subscriberExists($email)
+    {
+        $stmt = $this->db->prepare("SELECT * FROM subscribers WHERE email = :email");
+        $stmt->execute([':email' => $email]);
+        return $stmt->fetch() !== false;
+    }
+
+    /**
+     * Inserts a new subscriber into the database.
+     *
+     * @param string $email The email of the subscriber.
+     * @param string $name The name of the subscriber.
+     * @param string $lastName The last name of the subscriber.
+     * @param string $status The status of the subscriber.
+     */
+    private function insertSubscriber($email, $name, $lastName, $status)
+    {
+        $stmt = $this->db->prepare("INSERT INTO subscribers (email, name, last_name, status)
+        VALUES (:email, :name, :last_name, :status)");
+        $stmt->execute([
+            ':email' => $email,
+            ':name' => $name,
+            ':last_name' => $lastName,
+            ':status' => $status
+        ]);
+    }
+
+    /**
      * Maps raw database data to a Subscriber object.
      *
      * @param array $data The raw data from the database, typically a row from a SELECT query.
@@ -203,12 +170,11 @@ class SubscriberRepository
      */
     private function mapDataToSubscriber($data)
     {
-        $status = StatusRepository::mapDataToStatus($data);
         return new Subscriber(
             $data['email'],
             $data['name'],
             $data['last_name'],
-            $status
+            $data['status'],
         );
     }
 }
