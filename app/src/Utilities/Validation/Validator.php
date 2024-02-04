@@ -47,18 +47,14 @@ class Validator
             case 'required':
                 self::validateRequired($value, $fieldName);
                 break;
-            case 'integer':
-                self::validateInteger($value, $fieldName);
-                break;
             case 'string':
                 self::validateString($value, $fieldName);
                 break;
-                //TODO add email check
-            case 'status_enum':
-                self::validateStatusEnum($value, $fieldName);
+            case 'email':
+                self::validateEmail($value, $fieldName);
                 break;
             default:
-                if (substr($rule, 0, 6) === 'length') {
+                if (strpos($rule, 'length:') === 0) {
                     self::validateLength($value, $fieldName, substr($rule, 7));
                 }
                 break;
@@ -83,23 +79,6 @@ class Validator
     }
 
     /**
-     * Validates that a value is integer.
-     *
-     * @param mixed $value The value to validate.
-     * @param string $fieldName The name of the field being validated.
-     * @throws ValidationException If the value is not integer.
-     */
-    private static function validateInteger($value, $fieldName)
-    {
-        if (!is_integer($value)) {
-            throw new ValidationException(
-                sprintf(ErrorCode::NOT_INTEGER['message'], $fieldName),
-                self::BAD_REQUEST
-            );
-        }
-    }
-
-    /**
      * Validates that a value is a string.
      *
      * @param mixed $value The value to validate.
@@ -117,18 +96,17 @@ class Validator
     }
 
     /**
-     * Validates that a value is a valid status.
+     * Validates that a value is a valid email address.
      *
      * @param mixed $value The value to validate.
      * @param string $fieldName The name of the field being validated.
-     * @throws ValidationException If the value is not a valid status.
+     * @throws ValidationException If the value is not a valid email address.
      */
-    private static function validateStatusEnum($value, $fieldName)
+    private static function validateEmail($value, $fieldName)
     {
-        $validStatuses = ['active', 'inactive', 'suspended'];
-        if (!in_array($value, $validStatuses)) {
+        if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
             throw new ValidationException(
-                sprintf(ErrorCode::INVALID_STATUS['message'], $fieldName),
+                sprintf(ErrorCode::INVALID_EMAIL['message'], $fieldName),
                 self::BAD_REQUEST
             );
         }
