@@ -28,16 +28,23 @@ class SubscriberRepository
      *
      * @param int $page The page number to retrieve. Page numbers start at 1.
      * @param int $pageSize The number of subscribers to retrieve per page.
-     * @return array An array of Subscriber objects for the requested page.
+     * @return array An array of Subscriber objects for the requested page and pagination metadata.
      * @throws DatabaseException If there is an error executing the database query.
      */
     public function getAll($page, $pageSize)
     {
-
         $page = $page > 1 ? $page : 1;
         $pageSize = $pageSize > 1 ? $pageSize : 1;
 
+
         try {
+            // Get total number of subscribers
+            $totalSubscribersStmt = $this->db->query("SELECT COUNT(*) FROM subscribers");
+            $totalSubscribers = $totalSubscribersStmt->fetchColumn();
+
+            // calculate the total number of pages
+            $totalPages = ceil($totalSubscribers / $pageSize);
+
             $stmt = $this->db->prepare("SELECT * FROM subscribers s
                                         LIMIT :offset, :limit");
 
@@ -55,7 +62,15 @@ class SubscriberRepository
             throw new DatabaseException($e->getMessage(), 500, $e);
         }
 
-        return $subscribers;
+        return [
+            'data' => $subscribers,
+            'metadata' => [
+                'page' => $page,
+                'pageSize' => $pageSize,
+                'totalSubscribers' => $totalSubscribers,
+                'totalPages' => $totalPages
+            ]
+        ];
     }
 
 
