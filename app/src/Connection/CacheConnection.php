@@ -2,8 +2,9 @@
 
 namespace App\Connection;
 
-use App\Config\CacheConfig;
 use Predis\Client as Predis;
+use App\Utilities\ServiceLocator;
+use App\Config\CacheConfig;
 
 class CacheConnection
 {
@@ -17,18 +18,16 @@ class CacheConnection
      */
     private $conn;
 
-     /**
+    /**
      * CacheConnection constructor.
      * Private to prevent multiple instances.
      * Initializes a Redis connection.
      */
-    private function __construct()
+    private function __construct(CacheConfig $config)
     {
-        $config = CacheConfig::getConfig();
         $this->conn = new Predis([
             'scheme' => 'tcp',
             'host'   => $config['host'],
-            'port'   => $config['port'],
         ]);
         if (isset($config['password'])) {
             $this->conn->auth($config['password']);
@@ -44,7 +43,8 @@ class CacheConnection
     public static function getInstance()
     {
         if (!self::$instance) {
-            self::$instance = new CacheConnection();
+            $config = ServiceLocator::get('CacheConfig');
+            self::$instance = new self($config);
         }
         return self::$instance;
     }

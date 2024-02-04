@@ -6,14 +6,12 @@ use App\Utilities\Exceptions\CacheException;
 
 class CacheConfig
 {
-    const SUBSCRIBER_EMAIL_KEY = 'subscriber_email:';
-    const SUBSCRIBER_ID_KEY = 'subscriber_id:';
+    const SUBSCRIBER_EMAIL_KEY = 'sub_email:';
 
     private static $config = [
         'redis' => [
             'host' => 'REDIS_HOST',
             'port' => 'REDIS_PORT',
-            'username' => 'REDIS_USERNAME',
             'password' => 'REDIS_PASSWORD',
         ],
     ];
