@@ -2,25 +2,25 @@ version: '3'
 services:
 
   backend-app:
-    build: .
+    container_name: "mailerlite-b"
+    build: 
+      context: ./app
+      dockerfile: Dockerfile
     ports:
       - "8080:80"
     volumes:
-      - .:/var/www/html
+      - ./app:/var/www/html
     depends_on:
       - mysql_database
       - redis_cache
-    networks:
-      - backend
-      - frontend
     env_file:
       - .env
     environment:
-      MYSQL_HOST: ${MYSQL_HOST}
+      REDIS_HOST: redis_cache
+      MYSQL_HOST: mysql_database
       MYSQL_DBNAME: ${MYSQL_DBNAME}
       MYSQL_USERNAME: ${MYSQL_USERNAME}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      REDIS_HOST: redis_cache
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost"]
       interval: 15s
@@ -28,46 +28,39 @@ services:
       retries: 3
 
   mysql_database:
-    image: mysql:5.7
+    container_name: "mysql"
+    platform: linux/x86_64
+    image: mysql:5.7.32
     ports:
       - "3306:3306"
     volumes:
-      - ./startup.sql:/docker-entrypoint-initdb.d/startup.sql
-    networks:
-      - backend
+      - ./app/startup.sql:/docker-entrypoint-initdb.d/startup.sql
     env_file:
       - .env
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DBNAME}
+      MYSQL_USER: ${MYSQL_USERNAME}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-      interval: 30s
+      interval: 15s
       timeout: 10s
       retries: 3
 
   redis_cache:
-    image: redis
+    container_name: "redis"
+    image: redis:6.2
     ports:
       - "6379:6379"
-    networks:
-      - backend
 
-  frontend-app:
-    build:
-      context: ./web
-      dockerfile: Dockerfile
-    environment:
-      - BACKEND_URL=http://backend-app:8000
-    ports:
-      - "8080:80"
-    networks:
-      - frontend
-      - backend
-    depends_on:
-      - backend-app
-
-networks:
-  frontend:
-  backend:
-   driver: bridge
+  # frontend-app:
+    # container_name: "mailerlite-f"
+  #   build:
+  #     context: ./web
+  #     dockerfile: Dockerfile
+  #   environment:
+  #     - BACKEND_URL=http://backend-app:8000
+  #   ports:
+  #     - "8081:80"
+  #   depends_on:
+  #     - backend-app
