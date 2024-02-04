@@ -4,10 +4,10 @@ namespace App\Models;
 
 class Subscriber
 {
-    public $email;
-    public $name;
-    public $lastName;
-    public $status;
+    public string $email;
+    public string $name;
+    public string $lastName;
+    public string $status;
 
     public function __construct($email, $name, $last_name, $status)
     {
@@ -17,22 +17,22 @@ class Subscriber
         $this->status = $status;
     }
 
-    public function getEmail()
+    public function getEmail(): string
     {
         return $this->email;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getLastName()
+    public function getLastName(): string
     {
         return $this->lastName;
     }
 
-    public function getStatus()
+    public function getStatus(): string
     {
         return $this->status;
     }
