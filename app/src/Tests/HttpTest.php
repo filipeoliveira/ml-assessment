@@ -1,14 +1,33 @@
 <?php
 
+namespace Tests;
+
 use PHPUnit\Framework\TestCase;
 use App\Models\Response;
+use App\Utilities\Http;
 
-class HttpHelperTest extends TestCase
+class HttpTest extends TestCase
 {
+    private $http;
+
+    protected function setUp(): void
+    {
+        $this->http = new Http();
+    }
+
     public function testResponse()
     {
-        $response = response();
-        $this->assertInstanceOf(Response::class, $response);
+        $http = new Http();
+        $data = ['foo' => 'bar'];
+
+        ob_start();
+        $result = $http->response($data, 200);
+
+        // Get the output from the response method
+        $output = ob_get_clean();
+
+        $this->assertEquals(json_encode($data), $result);
+        $this->assertEquals(json_encode($data), $output);
     }
 
     public function testGetPaginationParameters()
@@ -16,7 +35,7 @@ class HttpHelperTest extends TestCase
         $_GET['page'] = '2';
         $_GET['pageSize'] = '20';
 
-        [$page, $pageSize] = getPaginationParameters();
+        [$page, $pageSize] = $this->http->getPaginationParameters();
 
         $this->assertEquals(2, $page);
         $this->assertEquals(20, $pageSize);
@@ -27,7 +46,7 @@ class HttpHelperTest extends TestCase
         $_GET['page'] = 'invalid';
         $_GET['pageSize'] = 'invalid';
 
-        [$page, $pageSize] = getPaginationParameters();
+        [$page, $pageSize] = $this->http->getPaginationParameters();
 
         $this->assertEquals(0, $page);
         $this->assertEquals(10, $pageSize);
@@ -37,9 +56,9 @@ class HttpHelperTest extends TestCase
     {
         $contentType = 'application/json';
         $json = json_encode(['key' => 'value']);
-    
-        $data = parsePostData($contentType, $json);
-    
+
+        $data = $this->http->parsePostData($contentType, $json);
+
         $this->assertEquals(['key' => 'value'], $data);
     }
 
@@ -48,7 +67,7 @@ class HttpHelperTest extends TestCase
         $contentType = 'application/x-www-form-urlencoded';
         $_POST = ['key' => 'value'];
 
-        $data = parsePostData($contentType);
+        $data = $this->http->parsePostData($contentType);
 
         $this->assertEquals(['key' => 'value'], $data);
     }

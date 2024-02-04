@@ -1,14 +1,19 @@
 <?php
 
+namespace Tests;
+
 use PHPUnit\Framework\TestCase;
 use App\Utilities\Validation\Validator;
 use App\Utilities\Exceptions\ValidationException;
+use App\Utilities\Errors\ErrorCode;
 
 class ValidatorTest extends TestCase
 {
     public function testValidateRequired()
     {
         $this->expectException(ValidationException::class);
+        $this->expectExceptionCode(Validator::BAD_REQUEST);
+        $this->expectExceptionMessage(sprintf(ErrorCode::MISSING_VALUE['message'], 'field'));
         Validator::validate([], ['field' => ['required']]);
     }
 
