@@ -14,24 +14,18 @@ This section describes the Data model for each database (MySQL and Redis), which
   - `email`: Email of the subscriber `VARCHAR(255)`
   - `name`: Name of the subscriber `VARCHAR(255)`
   - `last_name`: Last name of the subscriber `VARCHAR(255)`
-  - `status_id`: Status of the subscriber `FOREIGN KEY pointing to Statuses(id)`
+  - `status`: Status of the subscriber `VARCHAR(255)`
   - `created_at`: Creation timestamp of the subscriber
   - `updated_at`: Update timestamp of the subscriber
 
-#### Statuses
-- **Attributes**
-  - `id`: Primary Key
-  - `name`: Name of the status `VARCHAR(40)`
-  - `created_at`: Creation timestamp of the status
-  - `updated_at`: Update timestamp of the status
-
-> The possible statuses were not specified in the task requirements, so it's assumed that its a string of max-size: 40, that is populated in the statuses table. This was a developer's decision to make the status table flexible enough for adding or modifying existing statuses.
+> The possible statuses were not specified in the task requirements, so it's assumed that its a string of max-size: 255. We could normalize this field into another table, but I prefered to keep it simple.
 
 #### Developer Decisions
 Check [Data model decisions](./decisions.md#data-model)
 
 ----------
 
+-- TODO review this.
 # MySQL Database Storage Calculation
 
 Assuming that the statuses table will not grow a lot, and that would have around 100+- statuses for example. The grow factor of our database is basically the subscribers table.
@@ -53,7 +47,6 @@ Assuming that the statuses table will not grow a lot, and that would have around
 1. **Row Overhead**: There is a small overhead per row and additional storage requirements for table metadata - We are not considering that on the calculation.
 2. **Data Distribution**: These calculations are assuming that we use every space available of each VARCHAR fields. So, actual data may consume less space.
 3. **Index Size**: These calculations do not account for the additional storage used by indexes (like the one on `email` in the `subscriber` table). This is just to have a general idea of capacity planing.
-4. **Grow factor**: We are not considering the statuses table here, as its growth should not be great.
 
 ----------
 
@@ -63,11 +56,10 @@ Let's calculate the storage requirements for each row in `subscriber` tables (us
 
 | Column      | Data Type  | Size (bytes) | Description |
 |-------------|------------|--------------|-------------|
-| id          | INT        | 4            | INT requires 4 bytes. Being an AUTO_INCREMENT PRIMARY KEY, it also acts as the clustered index. |
 | email       | VARCHAR(255) | 256       | VARCHAR(255) requires up to 256 bytes (255 characters max and 1 byte for length prefix). An index on the email adds to the storage but is not calculated per row. |
 | name        | VARCHAR(255) | 256       | VARCHAR(255) requires up to 256 bytes. |
 | last_name   | VARCHAR(255) | 256       | VARCHAR(255) requires up to 256 bytes. |
-| status_id   | INT        | 4            | INT requires 4 bytes. Links to the `statuses` table. |
+| status   | INT        | 4            | INT requires 4 bytes. Links to the `statuses` table. |
 | created_at  | TIMESTAMP  | 4            | TIMESTAMP fields require 4 bytes each. |
 | updated_at  | TIMESTAMP  | 4            | TIMESTAMP fields require 4 bytes each. |
 

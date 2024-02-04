@@ -44,3 +44,11 @@ Please ensure your submission includes:
 - The implementation of both POST and GET endpoints as described.
 - A front-end page built with Angular, AngularJS, or Vue.
 - Send it as a public repository in Github.
+
+
+// TODO
+- Test coverage on the backend
+- List component
+- method to call an API.
+- method to use get data from API and show it
+- Dark mode on the frontend

@@ -1,0 +1,10 @@
+
+app/.DS_Store
+
+app/.phpunit.cache/
+
+app/.phpunit.result.cache
+
+app/tests/
+
+*.bak

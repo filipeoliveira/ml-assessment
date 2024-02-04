@@ -9,26 +9,25 @@
 ## Data model
 
 - I added `created_at` and `updated_at` fields to each table, this provides valuable information for debugging and auditing. They are not being populated or being returned to the user atm.
-- Although email is already unique, I've decided to have an `id` field at the subscribers table for the following reasons:
-  - **We will not need to expose the email in the URLs**.
-  - If a subscriber changes their email (for some reason in the future), having `id` as the PK allows us to update the email without affecting the relationship with other tables.
-  - Integer keys are usually more performant for lookup.
+- Due to requirements i'm using email as the primary key, being unique, to keep thins simple for now. Keep in mind that we could have had an id auto increment field here too.
+// TODO  - explain more and better.
 
 ### Cache
-- We are storing two keys on redis:
-  - `subscriber_email:<email>` which is pointing to another key `subscriber_id:<id>`
-  - `subscriber_email:<id>` which is pointing to the subscriber data`
+- We are storing one key on redis:
+  - `sub_email:<email>` which is pointing to the subscriber data
 
-- This optmization has the goal to not store duplicate data in redis. Therefore trading memory to +1 query in redis.
-- Since the endpoint to retrieve a subscriber will be executed a million times per minute, it is in the lower level of these keys.
+- TODO
+this approach was thought to optmize even more the retrieval of a single subscriber.
 
 
 ## Application
 
 ### Validation
-- We are always parsing `email` to be lowercase. On creation and on retrieval.
+- We are always parsing `email` and status to be lowercase. On creation and on retrieval.
 
 #### Created subscribers are not being populated directly to cache.
+// todo
+
 - The code is not populating the cache with the recently created subscriber. I prefered to load the data into the cache once its requested.
 - The reason is that I didn't know the usage context of this application, so I assumed that it's possible to a newly created subscriber to never be called for the next hours.
 - So let's trade cache memory for +1 database query. 
