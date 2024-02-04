@@ -21,6 +21,7 @@ this approach was thought to optmize even more the retrieval of a single subscri
 
 
 ## Application
+- TODO: Service locator vs dependency injection
 
 ### Validation
 - We are always parsing `email` and status to be lowercase. On creation and on retrieval.
