@@ -2,28 +2,39 @@
 
 namespace App\Config;
 
+
+use App\Utilities\Errors\ErrorCode;
 use App\Utilities\Exceptions\DatabaseException;
 
 class DatabaseConfig
 {
-    private static $config = [
-        'mysql' => [
-            'host' => 'MYSQL_HOST',
-            'dbname' => 'MYSQL_DBNAME',
-            'username' => 'MYSQL_USERNAME',
-            'password' => 'MYSQL_PASSWORD',
-            'port' => 'MYSQL_PORT',
-        ],
-    ];
+    private $config;
 
-    public static function getConfig($type = 'mysql')
+    public function __construct($type = 'mysql')
     {
-        if (!array_key_exists($type, self::$config)) {
-            throw new DatabaseException("Database type {$type} is not supported.", 500);
+        $config = [
+            'mysql' => [
+                'host' => 'MYSQL_HOST',
+                'dbname' => 'MYSQL_DBNAME',
+                'username' => 'MYSQL_USERNAME',
+                'password' => 'MYSQL_PASSWORD',
+                'port' => 'MYSQL_PORT',
+            ],
+        ];
+
+        if (!array_key_exists($type, $config)) {
+            throw new DatabaseException(
+                sprintf(ErrorCode::DATABASE_NOT_SUPPORTED['message'], $type),
+                500);
         }
 
-        return array_map(function ($value) {
+        $this->config = array_map(function ($value) {
             return getenv($value) ?: 'default';
-        }, self::$config[$type]);
+        }, $config[$type]);
+    }
+
+    public function getConfig()
+    {
+        return $this->config;
     }
 }

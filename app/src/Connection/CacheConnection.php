@@ -3,15 +3,10 @@
 namespace App\Connection;
 
 use Predis\Client as Predis;
-use App\Utilities\ServiceLocator;
 use App\Config\CacheConfig;
 
 class CacheConnection
 {
-    /**
-     * @var CacheConnection|null Singleton instance of the CacheConnection class
-     */
-    private static $instance = null;
 
     /**
      * @var Redis Cache connection
@@ -23,30 +18,20 @@ class CacheConnection
      * Private to prevent multiple instances.
      * Initializes a Redis connection.
      */
-    private function __construct(CacheConfig $config)
+    public function __construct(CacheConfig $config, Predis $predis = null)
     {
-        $this->conn = new Predis([
-            'scheme' => 'tcp',
-            'host'   => $config['host'],
-        ]);
-        if (isset($config['password'])) {
-            $this->conn->auth($config['password']);
+        if ($predis != null) {
+            $this->conn = $predis;
+        } else {
+            $config = $config->getConfig();
+            $this->conn = new Predis([
+                'scheme' => 'tcp',
+                'host'   => $config['host'],
+            ]);
+            if (isset($config['password'])) {
+                $this->conn->auth($config['password']);
+            }
         }
-    }
-
-    /**
-     * Get the singleton instance of the CacheConnection class.
-     * If it doesn't exist, a new instance is created.
-     *
-     * @return CacheConnection Singleton instance of the CacheConnection class
-     */
-    public static function getInstance()
-    {
-        if (!self::$instance) {
-            $config = ServiceLocator::get('CacheConfig');
-            self::$instance = new self($config);
-        }
-        return self::$instance;
     }
 
     /**
