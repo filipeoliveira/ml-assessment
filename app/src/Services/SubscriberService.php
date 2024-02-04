@@ -24,7 +24,7 @@ class SubscriberService
      *
      * @param int $page The page number (default is 0).
      * @param int $pageSize The number of items per page (default is 10).
-     * @return array The subscribers.
+     * @return array The subscribers along with pagination metadata.
      */
     public function getAll($page = 0, $pageSize = 10)
     {

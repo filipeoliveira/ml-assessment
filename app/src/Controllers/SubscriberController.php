@@ -3,45 +3,47 @@
 namespace App\Controllers;
 
 use App\Models\Subscriber;
+use App\Services\SubscriberService;
 use App\Utilities\Validation\Validator;
 use App\Utilities\Errors\ErrorCode;
-use Pimple\Container;
+use App\Utilities\Http;
 
 class SubscriberController
 {
     private $subscriberService;
+    private $http;
 
     /**
      * SubscriberController constructor.
      *
      * Initializes a new instance of the SubscriberService.
      */
-    public function __construct(Container $container)
+    public function __construct(Http $http, SubscriberService $subscriberService)
     {
-        $this->subscriberService = $container['subscriberService'];
+        $this->subscriberService = $subscriberService;
+        $this->http = $http;
     }
 
     /**
      * Retrieves all subscribers with pagination.
      *
-     * The page number and page size are retrieved from the query parameters.
+     * The page number and page size are retrieved from the query parameters througgh getPaginationParameters.
      * If these parameters are not present or are not valid integers, default values are used.
-     * Default value for 'page' is 0 and for 'pageSize' is 25.
      *
-     * @return \Illuminate\Http\JsonResponse A JSON response containing the subscribers.
+     * @return JSON encoded string response containing the subscribers.
      */
     public function getAll()
     {
-        list($page, $pageSize) = getPaginationParameters();
+        list($page, $pageSize) = $this->http->getPaginationParameters();
 
         $subscribers = $this->subscriberService->getAll($page, $pageSize);
-        return response()->json($subscribers);
+        return $this->http->response($subscribers);
     }
 
     /**
      * Retrieves a subscriber by email.
      *
-     * @return \Illuminate\Http\JsonResponse The response.
+     * @return JSON encoded string response The response.
      */
     public function getByEmail($email)
     {
@@ -54,10 +56,11 @@ class SubscriberController
         $subscriber = $this->subscriberService->getByEmail($request['email']);
 
         if ($subscriber) {
-            return response()->json($subscriber, 200);
+            return $this->http->response($subscriber, 200);
+
         }
 
-        return response()->json(ErrorCode::SUBSCRIBER_NOT_FOUND, 404);
+        return $this->http->response(ErrorCode::SUBSCRIBER_NOT_FOUND, 404);
     }
 
 
@@ -69,7 +72,7 @@ class SubscriberController
      * If a subscriber with the same email already exists, no action is taken.
      * Otherwise, a new subscriber is created.
      *
-     * @return \Illuminate\Http\JsonResponse The response.
+     * @return JSON encoded string response containg the new subscriber or an error.
      */
     public function create()
     {
@@ -81,17 +84,19 @@ class SubscriberController
             'status' => ['required', 'string', 'length:255'],
         ];
 
-        $data = parsePostData($_SERVER['CONTENT_TYPE']);
+        $data = $this->http->parsePostData($_SERVER['CONTENT_TYPE']);
         Validator::validate($data, $rules);
 
         // Create the subscriber
         $subscriber = new Subscriber($data['email'], $data['name'], $data['last_name'], $data['status']);
+
+
         $isNewSubscriber = $this->subscriberService->create($subscriber);
 
         if ($isNewSubscriber) {
-            return response()->json($subscriber, 201);
+            return $this->http->response($subscriber, 201);
         }
 
-        return response()->json(ErrorCode::SUBSCRIBER_ALREADY_EXISTS, 200);
+        return $this->http->response(ErrorCode::SUBSCRIBER_ALREADY_EXISTS, 200);
     }
 }
