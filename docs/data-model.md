@@ -4,8 +4,6 @@ This section describes the Data model for each database (MySQL and Redis), which
 
 # MySQL data model
 
-![ER Diagram]TODO add diagram
-
 ### Entities Description
 
 #### Subscribers

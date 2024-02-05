@@ -4,12 +4,11 @@
 
 At MailerLite we store millions and millions of subscribers for our users. This challenge involves designing and implementing a scalable endpoint to handle these subscribers efficiently.
 
-[Task information](docs/tasks.md)
-[Developer decisions](docs/decisions.md)
-[Data model](docs/tasks.md)
-
-[How to scale this project](docs/scalability.md)
-[Tests](docs/tests.md)
+1. [Task information](docs/tasks.md)
+2. [Developer decisions](docs/decisions.md)
+3. [Data model](docs/tasks.md)
+4. [How to scale this project](docs/scalability.md)
+5. [Tests](docs/tests.md)
 
 ----------
 
@@ -24,18 +23,19 @@ Before running this project, ensure that you have the following prerequisites in
 
 Ensure that both Docker and Docker Compose are installed and properly set up on your machine before proceeding.
 
-# Running
+## Running
 To run this project, just do: `docker-compose up` on the root folder of this project.
 It will download all the necessary docker images and will spin up the required backend infrastructure (database, application, cache, network, frontend ...).
 
 It's ready when the following message is presented:
 
 ```
-web-1          |    INFO  Server running on [http://0.0.0.0:8000].  
+web-1          |    INFO  Server running on [http://0.0.0.0:8005].  
+...
 ```
 
 - Backend API is available through [127.0.0.1:8080/api/subscribers](http://0.0.0.0:8000/api/subscribers)
 
-- Frontend web app is available through [127.0.0.1:8081](127.0.0.1:8081)
+- Frontend web app is available through [127.0.0.1:8085](127.0.0.1:8085)
 
 ----------

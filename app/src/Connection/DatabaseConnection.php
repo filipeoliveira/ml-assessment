@@ -4,6 +4,7 @@ namespace App\Connection;
 
 use App\Config\DatabaseConfig;
 use PDO;
+use PDOException;
 
 class DatabaseConnection
 {
@@ -21,9 +22,14 @@ class DatabaseConnection
         if ($pdo !== null) {
             $this->conn = $pdo;
         } else {
-            $config = $config->getConfig();
-            $dataSource = "mysql:host=" . $config['host'] . ";dbname=" . $config['dbname'];
-            $this->conn = new PDO($dataSource, $config['username'], $config['password']);
+            try {
+                $config = $config->getConfig();
+                $dataSource = "mysql:host=" . $config['host'] . ";dbname=" . $config['dbname'];
+                $this->conn = new PDO($dataSource, $config['username'], $config['password']);
+            } catch (PDOException $e) {
+                error_log('Connection error: ' . $e->getMessage());
+                throw $e;
+            }
         }
     }
 

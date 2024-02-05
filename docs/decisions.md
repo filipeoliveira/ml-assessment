@@ -7,32 +7,36 @@
 
 ## Data model
 
-#### created_at and updated_at
+#### Fields: created_at and updated_at
 - I added `created_at` and `updated_at` fields to each table, this provides valuable information for debugging and auditing. They are not being populated or being returned to the user at the moment.
+
+####
+- `idx_subscribers_email` index was created at the email PK to speed up retrieval.
 
 #### Email as primary key
 - I'm using email as the primary key, being unique, to keep things simple for now. This guarantees that emails are unique and indexed.
-> A few improvements could be made here:
-> - We could use an ID field as primary key but using an *autoincrement ID* or a *email hash as the ID*. This could give us two benefits: Flexibility for the user to change their email if necessary and even more speed on the lookup (although this point might not be noticeable). 
+- A few improvements could be made here:
+   - We could use an ID field as primary key but using an *autoincrement ID* or a *email hash as the ID*. This could give us two benefits: Flexibility for the user to change their email if necessary and even more speed on the lookup (although this point might not be noticeable). 
 
 #### Required fields an length
 - Considering the requirements, it wans't clear if the subscriber attributes could be optional, neither their max-length. So on this project it's assumed that `email`, `name`, `last_name` and `status` are required and have max-length of 255.
 
 #### Status field
 - It's also not clear what could be the possible statuses. To keep things simple, I've assumed that they are just strings. The code is also lowercasing the statuses to keep them standardized.
-> Future improvement:
-> - Keep in mind that a possible `status table` could be beneficial. This would ensure what are the possible statuses that a subscriber could have. This would lead to more complexity on the application, and the necessity of JOINS.
+- Future improvement:
+  - Keep in mind that a possible `status table` could be beneficial. This would ensure what are the possible statuses that a subscriber could have. This would lead to more complexity on the application, and the necessity of JOINS.
 
 #### 
 
 ----------
 
 ## Application
-- Talk about usage of dependency injection through a bootstrapcontainer (to simplify things) in a laravel way.
-- Tried to not use external libraries -- to practice.
-- The API handles both JSON and application/x-www-form-urlencoded
+- API is handling cors.
+- It's using Dependency Injection to through a bootstrap container to facilitate testing and keep things organized.
+- Tried to not use external libraries -- to practice :smile.
+- The API handles both JSON and application/x-www-form-urlencoded.
 - It follows [PSR-12](https://www.php-fig.org/psr/psr-12/) coding standards which satisfies [PSR-2](https://www.php-fig.org/psr/psr-2/)
-- There isn't authentication, CSRF protection or database migration scripts (Possible future improvements).
+- There isn't authentication, CSRF protection or database migration scripts `(Possible future improvements)`.
 
 #### Validation
 - We are always parsing `email` and status to be lowercase. On creation and on retrieval.
@@ -46,7 +50,7 @@
 
 #### Frontend
 - I decided to use Vue3 with vue-router, typescript and eslint.
-- Frontend design was inspired on Mailerlite brand and colors.
+- Frontend design was inspired on [Mailerlite brand and colors](https://www.mailerlite.com/brand-assets).
 - It's possible to:
   - List all subscribers, *with pagination* :smile: . 
   - View single subscriber information. 
@@ -54,7 +58,7 @@
 - **App is using a custom debounce function to avoid multiple requests to the backend if the user spam clicks.**
 
 #### Create subscriber strategy
-- 
+- // TODO
 
 
 ----------
