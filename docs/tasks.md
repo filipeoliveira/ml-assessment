@@ -1,5 +1,8 @@
 # MailerLite Challenge
 
+This is my understanding and rephrasing in bullet-points of the assignment. 
+The original text is at the bottom.
+
 ## Overview
 At MailerLite we store millions and millions of subscribers for our users. This challenge involves designing and implementing a scalable endpoint to handle these subscribers efficiently.
 
@@ -46,9 +49,21 @@ Please ensure your submission includes:
 - Send it as a public repository in Github.
 
 
-// TODO
-- Test coverage on the backend
-- List component
-- method to call an API.
-- method to use get data from API and show it
-- Dark mode on the frontend
+----------
+
+## Original text:
+
+> On MailerLite we store millions and millions of subscribers for our users.
+> Design an endpoint that can be used to write a subscriber to a database, along with a couple of fields (email, name, last name, status). Unfortunately, due to other dependencies, you cannot upsert records, so you’ll have to check if the subscriber already exists in the database.
+> That endpoint will be called about a million times a minute and some requests will be for the same subscriber, how would you scale it? Please be as specific as possible (e.g. I would use X configured like Y, etc.).
+> Provide a sample implementation in raw PHP (no frameworks please) for the above endpoint, along with any infrastructure requirements. Assume that batching multiple subscribers into a single call isn’t an option.
+> Implement a simple GET endpoint that retrieves a subscriber assuming it will also be called a million times a minute for different subscribers.
+> Finally, write a simple page in either Angular, AngularJS or Vue that shows a form to insert and read subscribers. Implement pagination as well.
+> How would you scale the above endpoints to handle 10 times the traffic? What challenges do you foresee?
+> General information
+> PSR-2 compliant source code
+> Instructions how to run a project on local environment running PHP 8.x, MySQL 5.x and the latest Chrome browser
+> Feel free to provide a dockerize your test assignment
+> No need to implement authentication, CSRF or database migration (just provide the sql file)
+> Test coverage a plus
+> Deliverables: Please create a public repository on GitHub for your source code, push it and send us the link.
