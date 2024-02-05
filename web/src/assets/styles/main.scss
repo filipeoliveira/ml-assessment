@@ -1,11 +1,11 @@
-// Override Bootstrap's default variables
-$primary: #007bff;
 
-// Import Bootstrap's source files
-@import "~bootstrap/scss/bootstrap";
-@import 'bootstrap-icons/font/bootstrap-icons.css';
 
 @import '_variables';
 @import '_mixins';
 @import 'theme';
+
+// Import Bootstrap's source Sass files
+@import "~bootstrap/scss/bootstrap";
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
 

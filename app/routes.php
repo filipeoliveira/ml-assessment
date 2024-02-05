@@ -7,6 +7,7 @@
 
 use App\Controllers\SubscriberController;
 use Pimple\Container;
+use App\Utilities\Http;
 
 class Router
 {
@@ -31,10 +32,16 @@ class Router
                 array_shift($matches);
 
                 if (isset($handlers[$method])) {
-                    list($class, $method) = $handlers[$method];
+                    $handler = $handlers[$method];
 
-                    $controller = $this->container[$class];
-                    call_user_func_array([$controller, $method], $matches);
+                    if (is_array($handler)) {
+                        list($class, $method) = $handler;
+                        $controller = $this->container[$class];
+                        call_user_func_array([$controller, $method], $matches);
+                    } else if ($handler instanceof Closure) {
+                        call_user_func_array($handler, $matches);
+                    }
+
                     return;
                 }
             }
@@ -58,5 +65,11 @@ return new Router([
     ],
     'api/subscribers/{email}' => [
         'GET' => [SubscriberController::class, 'getByEmail'],
+    ],
+    'api/health' => [
+        'GET' => function () {
+            $http = new Http();
+            $http->response("OK", 200);
+        },
     ]
 ]);

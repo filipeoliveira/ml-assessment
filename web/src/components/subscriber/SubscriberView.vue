@@ -1,39 +1,64 @@
 <template>
     <div>
-        <h2>Subscriber Details</h2>
         <div v-if="error">{{ error }}</div>
         <div v-else-if="subscriber">
-            <p>Email: {{ subscriber.email }}</p>
-            <p>First Name: {{ subscriber.firstName }}</p>
-            <p>Last Name: {{ subscriber.lastName }}</p>
-            <p>Status: {{ subscriber.status }}</p>
-        </div>
+            <BasicBreadcrumb :items="breadcrumbs" />
+            <h2 id="email-heading">example@example.com</h2>
+            <BasicContainer>
+                <span class="header">Subscriber Details</span>
+                <br>
+                <div class="container">
 
-        <div class="breadcrumb">
-            Subscribers > <span id="subscriber-email">example@example.com</span>
-        </div>
-        <h3 id="email-heading">example@example.com</h3>
-        <div class="container">
-            <div class="row">
-                <div class="column">
-                    <p>Email: <span id="email">example@example.com</span></p>
-                    <p>First Name: <span id="first-name">John</span></p>
+                    <div class="row mb-1 py-2 wrapper">
+                        <div class="col-md-6">
+                            <div class="d-flex justify-content-between">
+                                <span class="label">First name</span>
+                                <span class="value">{{ subscriber.name }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex justify-content-between">
+                                <span class="label">Email</span>
+                                <span class="value">{{ subscriber.email }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-1 py-2 wrapper">
+                        <div class="col-md-6">
+                            <div class="d-flex justify-content-between">
+                                <span class="label">Last name</span>
+                                <span class="value">{{ subscriber.lastName }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex justify-content-between">
+                                <span class="label">Status</span>
+                                <BasicBadge :status="subscriber.status" />
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
-                <div class="column">
-                    <p>Last Name: <span id="last-name">Doe</span></p>
-                    <p>Status: <span id="status">Active</span></p>
-                </div>
-            </div>
+            </BasicContainer>
         </div>
     </div>
 </template>
   
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue'
+import { defineComponent, onMounted, ref, computed } from 'vue'
+import BasicContainer from '@/components/common/BasicContainer.vue'
 import { Subscriber, getSubscriber } from '@/services/subscriberService'
+import BasicBreadcrumb from '@/components/common/BasicBreadcrumb.vue'
+import BasicBadge from '@/components/common/BasicBadge.vue'
 
 export default defineComponent({
     name: 'SubscriberView',
+    components: {
+        BasicContainer,
+        BasicBreadcrumb,
+        BasicBadge
+    },
     props: {
         email: {
             type: String,
@@ -56,14 +81,43 @@ export default defineComponent({
             }
         })
 
+        const breadcrumbs = computed(() => {
+            if (subscriber.value) {
+                return ["subscribers", subscriber.value.email]
+            } else {
+                return ["subscribers"]
+            }
+        })
+
         return {
             subscriber,
-            error
+            error,
+            breadcrumbs
         }
     }
 })
 </script>
   
-<style scoped>
-/* Your styles here */
+<style lang="scss" scoped>
+@import '@/assets/styles/_variables.scss';
+
+.header {
+    font-weight: bold;
+    color: black;
+    margin-top: 1em;
+}
+
+.wrapper {
+    border-bottom: 1px solid $gray-150;
+    .label {
+        color: #6f6f6f;
+        font-size: 0.95em;
+    }
+
+    .value {
+        color: #4a4a4c;
+        font-size: 0.95em;
+    }
+
+}
 </style>

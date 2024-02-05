@@ -58,8 +58,6 @@ class SubscriberRepositoryTest extends TestCase
         $this->cacheMock->shouldReceive('get')->andReturn(null);
         $this->cacheMock->shouldReceive('set')->andReturnSelf();
 
-        // TODO - should be called with cachekey and json_encode(result)
-
         // Mock the database prepare, bindParam, execute, and fetch methods
         $this->dbMock->shouldReceive('prepare', 'bindParam', 'execute')->andReturnSelf();
         $this->dbMock->shouldReceive('fetch')->andReturn([

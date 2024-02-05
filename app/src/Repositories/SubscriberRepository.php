@@ -36,7 +36,6 @@ class SubscriberRepository
         $page = $page > 1 ? $page : 1;
         $pageSize = $pageSize > 1 ? $pageSize : 1;
 
-
         try {
             // Get total number of subscribers
             $totalSubscribersStmt = $this->db->query("SELECT COUNT(*) FROM subscribers");

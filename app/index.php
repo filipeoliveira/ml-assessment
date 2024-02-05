@@ -5,7 +5,8 @@
  * It sets up error handling, loads the routes, and dispatches the request.
  */
 
-require_once __DIR__ . '/src/setup.php';
+ require_once __DIR__ . '/cors.php';
+ require_once __DIR__ . '/src/setup.php';
 
 use App\BootstrapContainer;
 

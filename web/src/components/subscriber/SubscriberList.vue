@@ -1,11 +1,25 @@
 <template>
-    <div>
-        <div class="pt-3 pb-2 mb-3 border-bottom">
-            <h1 class="h2">Subscribers</h1>
-        </div>
+    <BasicContainer>
+        <div>
+            <div class="pt-3 pb-2 mb-3 border-bottom d-flex justify-content-between">
+                <span class="title">Subscribers</span>
 
-        <div class="rounded-table">
-            <table class="table table-striped">
+                <div>
+                    <button type="button" class="btn btn-primary me-3 white" @click="refresh">Refresh</button>
+                    <button type="button" class="btn btn-secondary" @click="openModal">Add</button>
+
+                </div>
+                <BasicModal ref="test" />
+
+            </div>
+
+            <div v-if="loading" class="d-flex justify-content-center align-items-center" style="height: 69vh;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+
+            <table v-else class="table">
                 <caption></caption>
                 <thead>
                     <tr>
@@ -17,78 +31,195 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="subscriber in subscriberData" :key="subscriber.email">
+                    <tr v-for="subscriber in subscribers" :key="subscriber.email">
                         <td>{{ subscriber.email }}</td>
-                        <td>{{ subscriber.firstName }}</td>
+                        <td>{{ subscriber.name }}</td>
                         <td>{{ subscriber.lastName }}</td>
-                        <td>{{ subscriber.status }}</td>
                         <td>
-                            <button class="btn btn-secondary" @click="viewSubscriber(subscriber.email)">View</button>
+                            <BasicBadge :status="subscriber.status" />
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-secondary"
+                                @click="viewSubscriber(subscriber.email)">View</button>
                         </td>
                     </tr>
                 </tbody>
             </table>
-        </div>
 
-        <!-- Pagination -->
-        <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-center">
-                <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item"><a class="page-link" href="#">Next</a></li>
-            </ul>
-        </nav>
-    </div>
+            <nav aria-label="Page navigation" class="d-flex justify-content-between align-items-center">
+                <div class="input-group mb-3 page-size-input">
+                    <span class="align-self-center page-size-span" id="pageSize">Page size</span>
+                    <input type="number" class="form-control" placeholder="10" aria-label="PageSize"
+                        aria-describedby="pageSize" v-model="pageSize">
+                </div>
+
+                <div>
+                    <ul class="pagination">
+                        <li class="page-item" :class="{ disabled: page === 1 }">
+                            <a class="page-link" href="#" @click.prevent="page--">Previous</a>
+                        </li>
+                        <li class="page-item" v-for="n in pagination.totalPages" :key="n" :class="{ active: page === n }">
+                            <a class="page-link" href="#" @click.prevent="page = n">{{ n }}</a>
+                        </li>
+                        <li class="page-item" :class="{ disabled: page === pagination.totalPages }">
+                            <a class="page-link" href="#" @click.prevent="page++">Next</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </BasicContainer>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref, onMounted, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
+import { Subscriber, getAllSubscribers, PaginationMetadata } from '@/services/subscriberService'
+import { debounce } from '@/utilities/helper'
+import BasicContainer from '@/components/common/BasicContainer.vue'
+import BasicBadge from '@/components/common/BasicBadge.vue'
+import BasicModal from '@/components/common/BasicModal.vue'
+
+interface BasicModalInstance {
+    openModal: () => void;
+}
 
 export default defineComponent({
-  name: 'SubscriberList',
-  data() {
-    return {
-      subscriberData: [
-                { email: 'john@example.com', firstName: 'John', lastName: 'Doe', status: 'active' },
-                { email: 'jane@example.com', firstName: 'Jane', lastName: 'Doe', status: 'inactive' },
-                { email: 'bob@example.com', firstName: 'Bob', lastName: 'Smith', status: 'suspended' },
-                { email: 'john@example.com', firstName: 'John', lastName: 'Doe', status: 'active' },
-                { email: 'jane@example.com', firstName: 'Jane', lastName: 'Doe', status: 'inactive' },
-                { email: 'bob@example.com', firstName: 'Bob', lastName: 'Smith', status: 'suspended' },
-                { email: 'john@example.com', firstName: 'John', lastName: 'Doe', status: 'active' },
-                { email: 'jane@example.com', firstName: 'Jane', lastName: 'Doe', status: 'inactive' },
-                { email: 'bob@example.com', firstName: 'Bob', lastName: 'Smith', status: 'suspended' },
-                { email: 'john@example.com', firstName: 'John', lastName: 'Doe', status: 'active' },
-      ]
-    }
-  },
-  setup() {
-    const router = useRouter()
+    name: 'SubscriberList',
+    components: {
+        BasicContainer,
+        BasicBadge,
+        BasicModal
+    },
+    setup() {
+        const subscribers = ref([] as Subscriber[]);
+        const pagination = ref({} as PaginationMetadata);
+        const page = ref(1);
+        const pageSize = ref(10);
+        const loading = ref(true);
+        const error = ref("");
+        const test = ref<BasicModalInstance | null>(null);
 
-    const viewSubscriber = (email: string) => {
-      router.push(`/subscribers/${email}`)
-    }
+        const router = useRouter()
 
-    return {
-      viewSubscriber
+        const fetchSubscribers = debounce(async () => {
+            loading.value = true;
+            try {
+                const { metadata, data } = await getAllSubscribers({ page: page.value, pageSize: pageSize.value });
+                pagination.value = metadata;
+                subscribers.value = data;
+            } catch (e: unknown) {
+                if (e instanceof Error) {
+                    error.value = e.message;
+                } else {
+                    error.value = "Something happened";
+                }
+            }
+            finally {
+                setTimeout(() => {
+                    loading.value = false
+                }, 2000) // Simulate a delay
+            }
+        }, 500);
+
+        // Load data at on component mount.
+        onMounted(async () => {
+            await nextTick()
+            fetchSubscribers()
+            console.log(test)
+        })
+
+        watch(page, fetchSubscribers);
+        watch(pageSize, fetchSubscribers);
+
+        const viewSubscriber = (email: string) => {
+            router.push(`/subscribers/${email}`)
+        }
+
+        const openModal = () => {
+            console.log(test)
+            if (test.value) {
+                alert(2)
+
+                if (typeof test.value.openModal === 'function') {
+                    alert(1)
+                    test.value.openModal()
+                }
+            }
+        }
+
+        return {
+            openModal,
+            subscribers,
+            pagination,
+            page,
+            pageSize,
+            loading,
+            error,
+            viewSubscriber,
+            refresh: fetchSubscribers
+        }
     }
-  }
 })
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/theme.scss';
+@import '@/assets/styles/_variables.scss';
 
-table {
-    width: 100%;
+.title {
+    align-self: stretch;
+    flex-grow: 0;
+    line-height: 1.3;
+    letter-spacing: normal;
+    text-align: left;
+    color: $black;
+
+    font: {
+        size: 1.75em;
+        weight: bold;
+        stretch: normal;
+        style: normal;
+    }
 }
 
-.rounded-table {
-    margin: 2em;
-    padding: 1em;
-    border-radius: 2px;
-    background-color: $white;
+.table {
+    border-top: 1px solid $gray-150;
+
+    thead th {
+        color: lighten($gray-400, 25%);
+        border: none;
+        padding-left: 0;
+    }
+
+    tr {
+        max-height: 2.875em;
+
+        &:last-child {
+            border-top: 1px solid transparent;
+        }
+
+        td {
+            color: $gray-400;
+            padding: 0.75em 0;
+        }
+    }
+}
+
+.page-size-input {
+    width: 150px;
+
+    input {
+        border-radius: 5px !important;
+        cursor: pointer;
+    }
+}
+
+.page-size-span {
+    color: $gray-400;
+    display: block;
+    margin-right: 1em;
+}
+
+.white {
+    color: $white !important;
 }
 </style>

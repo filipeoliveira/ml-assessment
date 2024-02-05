@@ -1,15 +1,26 @@
-const API_URL = process.env.API_URL
+const API_URL = `${process.env.VUE_APP_API_URL}/api`;
 
+export interface PaginationMetadata {
+  page: number;
+  pageSize: number;
+  totalSubscribers: number;
+  totalPages: number;
+}
+
+export interface SubscriberPaginatedData {
+  data: Subscriber[];
+  metadata: PaginationMetadata;
+}
 export interface Subscriber {
   email: string;
-  firstName: string;
+  name: string;
   lastName: string;
   status: string;
 }
 
 export interface Pagination {
   page: number;
-  limit: number;
+  pageSize: number;
 }
 
 /**
@@ -19,13 +30,13 @@ export interface Pagination {
  * @returns {Promise<Subscriber>} The subscriber data.
  */
 export async function getSubscriber(email: string): Promise<Subscriber> {
-  const response = await fetch(`${API_URL}/subscribers/${email}`)
+  const response = await fetch(`${API_URL}/subscribers/${email}`);
 
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`)
+    throw new Error(`HTTP error! status: ${response.status}`);
   }
 
-  return await response.json()
+  return await response.json();
 }
 
 /**
@@ -34,34 +45,40 @@ export async function getSubscriber(email: string): Promise<Subscriber> {
  * @param {Subscriber} subscriber - The data of the new subscriber.
  * @returns {Promise<Subscriber>} The created subscriber data.
  */
-export async function createSubscriber(subscriber: Subscriber): Promise<Subscriber> {
+export async function createSubscriber(
+  subscriber: Subscriber
+): Promise<Subscriber> {
   const response = await fetch(`${API_URL}/subscribers`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json'
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify(subscriber)
-  })
+    body: JSON.stringify(subscriber),
+  });
 
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`)
+    throw new Error(`HTTP error! status: ${response.status}`);
   }
 
-  return await response.json()
+  return await response.json();
 }
 
 /**
  * Fetch all subscribers with pagination.
  *
  * @param {Pagination} pagination - The pagination data.
- * @returns {Promise<Subscriber[]>} The list of subscribers.
+ * @returns {Promise<SubscriberPaginatedData>} The getAllSubscribers response.
  */
-export async function getAllSubscribers(pagination: Pagination): Promise<Subscriber[]> {
-  const response = await fetch(`${API_URL}/subscribers?page=${pagination.page}&limit=${pagination.limit}`)
+export async function getAllSubscribers(
+  pagination: Pagination
+): Promise<SubscriberPaginatedData> {
+  const response = await fetch(
+    `${API_URL}/subscribers?page=${pagination.page}&pageSize=${pagination.pageSize}`
+  );
 
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`)
+    throw new Error(`HTTP error! status: ${response.status}`);
   }
 
-  return await response.json()
+  return await response.json();
 }

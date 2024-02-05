@@ -23,27 +23,31 @@ export default {
 }
 </script>
   
-<style scoped>
-.btn-wrapper {}
+<style scoped lang="scss">
 
 .btn-sidebar {
-  color: #6f6f6f;
   background-color: transparent;
   border: none;
   padding: 0;
   font-size: 1em;
   text-align: left;
   width: 100%;
+  color: #6f6f6f!important;
+
+}
+
+.btn-wrapper {
+  padding: 0.25em 0; 
 }
 
 .btn-wrapper:hover,
 .btn-wrapper:focus {
-  color: #4a4a4c;
   outline: none;
 }
 
 .btn-wrapper:active {
-  color: #4a4a4c;
-  border-right: 2px solid #09c269;
+  font-weight: bold;
 }
+
+
 </style>

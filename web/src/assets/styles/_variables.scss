@@ -1,7 +1,14 @@
-$color-background: #FFFFFF;
-$color-side-menu-bg: #F4F5F7;
-$color-active-item: #333333;
-$color-item: #7C7E81;
-$color-subscriber-number: #22C55E;
-$color-labels: #64748B;
-$color-graph-line: #10B981;
+$black: #000000;
+
+$green-500: #09c269;
+$green-700: #05743f;
+$green-100: #cef3e1;
+$gray-100: #f3f4f6;
+$gray-150: #eaecef;
+$gray-300: #b3b3b5;
+$gray-400: #6f6f6f;
+$gray-500: #4a4a4c;
+$white: #fff;
+
+// overriding bootstrap
+$primary: $green-500;

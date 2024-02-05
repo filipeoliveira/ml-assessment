@@ -20,7 +20,6 @@ export default {
 @import 'assets/styles/main.scss';
 
 .full {
-  background-color: green;
   height: 100vh;
 }
 </style>

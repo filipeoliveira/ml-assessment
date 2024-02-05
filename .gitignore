@@ -8,3 +8,5 @@ app/.phpunit.result.cache
 app/tests/
 
 *.bak
+
+app/report/
