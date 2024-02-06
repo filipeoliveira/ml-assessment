@@ -39,11 +39,17 @@ mysql         | [Note] mysqld: ready for connections.
 
 - Frontend web app is available through [127.0.0.1:8085](127.0.0.1:8085)
 
+## Visual preview
+
 <p float="left">
-  <img src="/docs/images/homepage" width="25%" />
-  <img src="/docs/images/subscribers_list" width="25%" /> 
-  <img src="/docs/images/subscribers_create.png" width="25%" />
-  <img src="/docs/images/subscribers_view.png" width="25%" />
+  <img src="/docs/images/homepage.png" width="46%" />
+  <img src="/docs/images/subscribers_list.png" width="46%" /> 
 </p>
+
+<p float="left">
+  <img src="/docs/images/subscribers_create.png" width="46%" />
+  <img src="/docs/images/subscribers_view.png" width="46%" />
+</p>
+
 
 ----------
