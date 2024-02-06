@@ -41,7 +41,7 @@ export default {
     }
 
     &.inactive {
-        background-color: #d9534f;
+        background-color: $red-500;
     }
 
 }

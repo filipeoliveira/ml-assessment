@@ -18,8 +18,8 @@
                         </div>
                         <div class="col-md-6">
                             <div class="d-flex justify-content-between">
-                                <span class="label">Email</span>
-                                <span class="value">{{ subscriber.email }}</span>
+                                <span class="label">Last name</span>
+                                <span class="value">{{ subscriber.lastName }}</span>
                             </div>
                         </div>
                     </div>
@@ -27,10 +27,11 @@
                     <div class="row mb-1 py-2 wrapper">
                         <div class="col-md-6">
                             <div class="d-flex justify-content-between">
-                                <span class="label">Last name</span>
-                                <span class="value">{{ subscriber.lastName }}</span>
+                                <span class="label">Email</span>
+                                <span class="value">{{ subscriber.email }}</span>
                             </div>
                         </div>
+
                         <div class="col-md-6">
                             <div class="d-flex justify-content-between">
                                 <span class="label">Status</span>
@@ -109,6 +110,7 @@ export default defineComponent({
 
 .wrapper {
     border-bottom: 1px solid $gray-150;
+
     .label {
         color: #6f6f6f;
         font-size: 0.95em;

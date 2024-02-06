@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import SubscriberList from "./components/subscriber/SubscriberList.vue";
 import SubscriberView from "./components/subscriber/SubscriberView.vue";
 import HomepageViewVue from "./components/HomepageView.vue";
+import SubscriberCreate from "./components/subscriber/SubscriberCreate.vue";
 
 const routes = [
   { path: "/", component: HomepageViewVue, meta: { title: "Home" } },
@@ -9,6 +10,12 @@ const routes = [
     path: "/subscribers",
     component: SubscriberList,
     meta: { title: "Subscribers" },
+  },
+  {
+    path: "/subscribers/create",
+    component: SubscriberCreate,
+    props: true,
+    meta: { title: "Subscriber Creation" },
   },
   {
     path: "/subscribers/:email",

@@ -53,14 +53,26 @@ export async function createSubscriber(
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(subscriber),
+    body: JSON.stringify({
+      name: subscriber.name,
+      last_name: subscriber.lastName,
+      email: subscriber.email,
+      status: subscriber.status,
+    }),
   });
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+  const responseData = await response.json();
+
+  if (response.status === 201) {
+    return responseData;
   }
 
-  return await response.json();
+  if (response.status === 200) {
+    // subscriber already exists
+    throw new Error(responseData.message);
+  } else {
+    throw new Error("Unexpected status code");
+  }
 }
 
 /**

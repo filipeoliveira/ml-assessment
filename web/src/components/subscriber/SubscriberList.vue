@@ -6,10 +6,9 @@
 
                 <div>
                     <button type="button" class="btn btn-primary me-3 white" @click="refresh">Refresh</button>
-                    <button type="button" class="btn btn-secondary" @click="openModal">Add</button>
+                    <button type="button" class="btn btn-secondary" @click="visit('/subscribers/create')">Create</button>
 
                 </div>
-                <BasicModal ref="test" />
 
             </div>
 
@@ -40,7 +39,7 @@
                         </td>
                         <td>
                             <button class="btn btn-sm btn-outline-secondary"
-                                @click="viewSubscriber(subscriber.email)">View</button>
+                                @click="visit(`/subscribers/${subscriber.email}`)">View</button>
                         </td>
                     </tr>
                 </tbody>
@@ -58,8 +57,10 @@
                         <li class="page-item" :class="{ disabled: page === 1 }">
                             <a class="page-link" href="#" @click.prevent="page--">Previous</a>
                         </li>
-                        <li class="page-item" v-for="n in pagination.totalPages" :key="n" :class="{ active: page === n }">
-                            <a class="page-link" href="#" @click.prevent="page = n">{{ n }}</a>
+                        <li class="page-item" v-for="n in Array.from({ length: 5 }, (_, i) => page - 2 + i)" :key="n"
+                            :class="{ active: page === n }">
+                            <a class="page-link" href="#" @click.prevent="page = n"
+                                v-if="n > 0 && n <= pagination.totalPages">{{ n }}</a>
                         </li>
                         <li class="page-item" :class="{ disabled: page === pagination.totalPages }">
                             <a class="page-link" href="#" @click.prevent="page++">Next</a>
@@ -71,24 +72,18 @@
     </BasicContainer>
 </template>
 <script lang="ts">
-import { defineComponent, ref, onMounted, watch, nextTick } from 'vue'
+import { defineComponent, ref, onMounted, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Subscriber, getAllSubscribers, PaginationMetadata } from '@/services/subscriberService'
 import { debounce } from '@/utilities/helper'
 import BasicContainer from '@/components/common/BasicContainer.vue'
 import BasicBadge from '@/components/common/BasicBadge.vue'
-import BasicModal from '@/components/common/BasicModal.vue'
-
-interface BasicModalInstance {
-    openModal: () => void;
-}
 
 export default defineComponent({
     name: 'SubscriberList',
     components: {
         BasicContainer,
         BasicBadge,
-        BasicModal
     },
     setup() {
         const subscribers = ref([] as Subscriber[]);
@@ -97,7 +92,6 @@ export default defineComponent({
         const pageSize = ref(10);
         const loading = ref(true);
         const error = ref("");
-        const test = ref<BasicModalInstance | null>(null);
 
         const router = useRouter()
 
@@ -117,46 +111,36 @@ export default defineComponent({
             finally {
                 setTimeout(() => {
                     loading.value = false
-                }, 2000) // Simulate a delay
+                }, 500) // Simulate a small delay
             }
         }, 500);
 
         // Load data at on component mount.
-        onMounted(async () => {
-            await nextTick()
-            fetchSubscribers()
-            console.log(test)
-        })
+        onMounted(() => fetchSubscribers())
 
         watch(page, fetchSubscribers);
         watch(pageSize, fetchSubscribers);
 
-        const viewSubscriber = (email: string) => {
-            router.push(`/subscribers/${email}`)
+        const visit = (destination: string) => {
+            router.push(destination)
         }
 
-        const openModal = () => {
-            console.log(test)
-            if (test.value) {
-                alert(2)
-
-                if (typeof test.value.openModal === 'function') {
-                    alert(1)
-                    test.value.openModal()
-                }
-            }
-        }
+        const pageNumbers = computed(() => {
+            const start = Math.max(1, page.value - 2);
+            const end = Math.min(pagination.value.totalPages, page.value + 2);
+            return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+        })
 
         return {
-            openModal,
             subscribers,
             pagination,
             page,
             pageSize,
             loading,
             error,
-            viewSubscriber,
-            refresh: fetchSubscribers
+            visit,
+            refresh: fetchSubscribers,
+            pageNumbers,
         }
     }
 })
