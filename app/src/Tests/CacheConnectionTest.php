@@ -1,5 +1,7 @@
 <?php
 
+namespace Tests;
+
 use PHPUnit\Framework\TestCase;
 use Predis\Client as Predis;
 
@@ -11,10 +13,12 @@ class CacheConnectionTest extends TestCase
     public function testConstructor()
     {
         $config = $this->createMock(CacheConfig::class);
-        $config->method('getConfig')->willReturn([
-            'host' => 'localhost',
-            'password' => 'password',
-        ]);
+        $config->method('getConfig')->willReturn(
+            [
+                'host' => 'localhost',
+                'password' => 'password',
+            ]
+        );
 
         $predisStub = $this->createStub(Predis::class);
         $cacheConnection = new CacheConnection($config, $predisStub);
@@ -25,10 +29,12 @@ class CacheConnectionTest extends TestCase
     public function testGetConnection()
     {
         $config = $this->createMock(CacheConfig::class);
-        $config->method('getConfig')->willReturn([
-            'host' => 'localhost',
-            'password' => 'password',
-        ]);
+        $config->method('getConfig')->willReturn(
+            [
+                'host' => 'localhost',
+                'password' => 'password',
+            ]
+        );
 
         $predisStub = $this->createStub(Predis::class);
         $cacheConnection = new CacheConnection($config, $predisStub);

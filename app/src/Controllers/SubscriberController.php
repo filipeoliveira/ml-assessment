@@ -57,7 +57,6 @@ class SubscriberController
 
         if ($subscriber) {
             return $this->http->response($subscriber, 200);
-
         }
 
         return $this->http->response(ErrorCode::SUBSCRIBER_NOT_FOUND, 404);

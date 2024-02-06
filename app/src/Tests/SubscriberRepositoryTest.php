@@ -38,10 +38,12 @@ class SubscriberRepositoryTest extends TestCase
             ->andReturnSelf();
 
         $this->dbMock->shouldReceive('fetchColumn')->andReturn(10);
-        $this->dbMock->shouldReceive('fetchAll')->andReturn([
+        $this->dbMock->shouldReceive('fetchAll')->andReturn(
+            [
             ['email' => 'test1@example.com', 'name' => 'Test1', 'last_name' => 'User1', 'status' => 'active'],
             ['email' => 'test2@example.com', 'name' => 'Test2', 'last_name' => 'User2', 'status' => 'inactive'],
-        ]);
+            ]
+        );
 
         $result = $this->subscriberRepository->getAll(1, 2);
 
@@ -60,12 +62,14 @@ class SubscriberRepositoryTest extends TestCase
 
         // Mock the database prepare, bindParam, execute, and fetch methods
         $this->dbMock->shouldReceive('prepare', 'bindParam', 'execute')->andReturnSelf();
-        $this->dbMock->shouldReceive('fetch')->andReturn([
+        $this->dbMock->shouldReceive('fetch')->andReturn(
+            [
             'email' => 'test@example.com',
             'name' => 'Test',
             'last_name' => 'User',
             'status' => 'active'
-        ]);
+            ]
+        );
 
 
         $result = $this->subscriberRepository->getByEmail('test@example.com');

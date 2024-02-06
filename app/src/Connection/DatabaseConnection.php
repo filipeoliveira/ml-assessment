@@ -24,7 +24,7 @@ class DatabaseConnection
         } else {
             try {
                 $config = $config->getConfig();
-                $dataSource = "mysql:host=" . $config['host'] . ";dbname=" . $config['dbname'];
+                $dataSource = 'mysql:host=' . $config['host'] . ';dbname=' . $config['dbname'];
                 $this->conn = new PDO($dataSource, $config['username'], $config['password']);
             } catch (PDOException $e) {
                 error_log('Connection error: ' . $e->getMessage());
@@ -38,7 +38,7 @@ class DatabaseConnection
      *
      * @return PDO Database connection
      */
-    public function getConnection()
+    public function getConnection(): PDO
     {
         return $this->conn;
     }

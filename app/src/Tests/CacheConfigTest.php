@@ -7,7 +7,6 @@ use App\Utilities\Errors\ErrorCode;
 use App\Utilities\Exceptions\CacheException;
 use PHPUnit\Framework\TestCase;
 
-
 class CacheConfigTest extends TestCase
 {
     public function testGetConfig()

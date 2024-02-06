@@ -33,7 +33,7 @@
 - It's using Dependency Injection to through a bootstrap container to facilitate testing and keep things organized.
 - Tried to not use external libraries -- to practice :smile.
 - The API handles both JSON and application/x-www-form-urlencoded.
-- It follows [PSR-12](https://www.php-fig.org/psr/psr-12/) coding standards which satisfies [PSR-2](https://www.php-fig.org/psr/psr-2/)
+- It follows [PSR-2](https://www.php-fig.org/psr/psr-2/) standards. This was assured using php code sniffing tool.
 - There isn't authentication, CSRF protection or database migration scripts `(Possible future improvements)`.
 
 #### Validation

@@ -22,8 +22,8 @@ class SubscriberService
     /**
      * Retrieves all subscribers with pagination.
      *
-     * @param int $page The page number (default is 0).
-     * @param int $pageSize The number of items per page (default is 10).
+     * @param  int $page     The page number (default is 0).
+     * @param  int $pageSize The number of items per page (default is 10).
      * @return array The subscribers along with pagination metadata.
      */
     public function getAll($page = 0, $pageSize = 10)
@@ -37,7 +37,7 @@ class SubscriberService
      * If a subscriber with the same email already exists, no action is taken.
      * Otherwise, a new subscriber is created.
      *
-     * @param Subscriber $subscriber The subscriber to write.
+     * @param  Subscriber $subscriber The subscriber to write.
      * @return bool True if a new subscriber was created, false otherwise.
      */
     public function create(Subscriber $subscriber)
@@ -57,7 +57,7 @@ class SubscriberService
     /**
      * Retrieves a subscriber by email.
      *
-     * @param string $email The email of the subscriber.
+     * @param  string $email The email of the subscriber.
      * @return Subscriber|null The subscriber, or null if no subscriber was found.
      */
     public function getByEmail($email)

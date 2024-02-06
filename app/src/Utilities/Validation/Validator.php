@@ -12,8 +12,8 @@ class Validator
     /**
      * Validates an array of values against a set of rules.
      *
-     * @param array $values The values to validate.
-     * @param array $rules The rules to validate against.
+     * @param  array $values The values to validate.
+     * @param  array $rules  The rules to validate against.
      * @throws ValidationException If any value fails any of its rules.
      */
     public static function validate($values, $rules)
@@ -36,9 +36,9 @@ class Validator
     /**
      * Applies a single validation rule to a value.
      *
-     * @param string $rule The rule to apply.
-     * @param mixed $value The value to validate.
-     * @param string $fieldName The name of the field being validated.
+     * @param  string $rule      The rule to apply.
+     * @param  mixed  $value     The value to validate.
+     * @param  string $fieldName The name of the field being validated.
      * @throws ValidationException If the value fails the rule.
      */
     private static function applyRule($rule, $value, $fieldName)
@@ -64,8 +64,8 @@ class Validator
     /**
      * Validates that a value exists.
      *
-     * @param mixed $value The value to validate.
-     * @param string $fieldName The name of the field being validated.
+     * @param  mixed  $value     The value to validate.
+     * @param  string $fieldName The name of the field being validated.
      * @throws ValidationException If the value does not exist.
      */
     private static function validateRequired($value, $fieldName)
@@ -81,8 +81,8 @@ class Validator
     /**
      * Validates that a value is a string.
      *
-     * @param mixed $value The value to validate.
-     * @param string $fieldName The name of the field being validated.
+     * @param  mixed  $value     The value to validate.
+     * @param  string $fieldName The name of the field being validated.
      * @throws ValidationException If the value is not a string.
      */
     private static function validateString($value, $fieldName)
@@ -98,8 +98,8 @@ class Validator
     /**
      * Validates that a value is a valid email address.
      *
-     * @param mixed $value The value to validate.
-     * @param string $fieldName The name of the field being validated.
+     * @param  mixed  $value     The value to validate.
+     * @param  string $fieldName The name of the field being validated.
      * @throws ValidationException If the value is not a valid email address.
      */
     private static function validateEmail($value, $fieldName)
@@ -115,9 +115,9 @@ class Validator
     /**
      * Validates that a value does not exceed a certain length.
      *
-     * @param mixed $value The value to validate.
-     * @param string $fieldName The name of the field being validated.
-     * @param int $length The maximum allowed length.
+     * @param  mixed  $value     The value to validate.
+     * @param  string $fieldName The name of the field being validated.
+     * @param  int    $length    The maximum allowed length.
      * @throws ValidationException If the value exceeds the maximum length.
      */
     private static function validateLength($value, $fieldName, $length)

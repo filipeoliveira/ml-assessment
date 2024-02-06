@@ -1,17 +1,38 @@
 <?php
 
+/**
+ * Cache Configuration
+ *
+ * @category Configuration
+ * @package  App\Config
+ */
+
 namespace App\Config;
 
 use App\Utilities\Errors\ErrorCode;
 use App\Utilities\Exceptions\CacheException;
 
+/**
+ * CacheConfig Class
+ *
+ * @category Configuration
+ * @package  App\Config
+ */
 class CacheConfig
 {
     const SUBSCRIBER_EMAIL_KEY = 'sub_email:';
 
+    /**
+     * @var array Configuration array
+     */
     private $config;
 
-    public function __construct($type = 'redis')
+    /**
+     * Constructor
+     *
+     * @param string $type Type of cache
+     */
+    public function __construct(string $type = 'redis')
     {
         $config = [
             'redis' => [
@@ -28,12 +49,20 @@ class CacheConfig
             );
         }
 
-        $this->config = array_map(function ($value) {
-            return getenv($value) ?: null;
-        }, $config[$type]);
+        $this->config = array_map(
+            function ($value) {
+                return getenv($value) ?: null;
+            },
+            $config[$type]
+        );
     }
 
-    public function getConfig()
+    /**
+     * Get Config
+     *
+     * @return array Configuration array
+     */
+    public function getConfig(): array
     {
         return $this->config;
     }

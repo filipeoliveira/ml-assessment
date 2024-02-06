@@ -1,5 +1,7 @@
 <?php
 
+namespace Tests;
+
 use PHPUnit\Framework\TestCase;
 use App\Connection\DatabaseConnection;
 use App\Config\DatabaseConfig;
@@ -10,12 +12,14 @@ class DatabaseConnectionTest extends TestCase
     public function testConstructor()
     {
         $config = $this->createMock(DatabaseConfig::class);
-        $config->method('getConfig')->willReturn([
+        $config->method('getConfig')->willReturn(
+            [
             'host' => 'localhost',
             'dbname' => 'test',
             'username' => 'root',
             'password' => 'password',
-        ]);
+            ]
+        );
 
         $pdoStub = $this->createStub(PDO::class);
         $dbConnection = new DatabaseConnection($config, $pdoStub);
@@ -26,12 +30,14 @@ class DatabaseConnectionTest extends TestCase
     public function testGetConnection()
     {
         $config = $this->createMock(DatabaseConfig::class);
-        $config->method('getConfig')->willReturn([
+        $config->method('getConfig')->willReturn(
+            [
             'host' => 'localhost',
             'dbname' => 'test',
             'username' => 'root',
             'password' => 'password',
-        ]);
+            ]
+        );
 
         $pdoStub = $this->createStub(PDO::class);
         $dbConnection = new DatabaseConnection($config, $pdoStub);

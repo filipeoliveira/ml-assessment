@@ -7,7 +7,6 @@ use App\Config\CacheConfig;
 
 class CacheConnection
 {
-
     /**
      * @var Redis Cache connection
      */
@@ -20,14 +19,16 @@ class CacheConnection
      */
     public function __construct(CacheConfig $config, Predis $predis = null)
     {
-        if ($predis != null) {
+        if ($predis !== null) {
             $this->conn = $predis;
         } else {
             $config = $config->getConfig();
-            $this->conn = new Predis([
-                'scheme' => 'tcp',
-                'host'   => $config['host'],
-            ]);
+            $this->conn = new Predis(
+                [
+                    'scheme' => 'tcp',
+                    'host'   => $config['host'],
+                ]
+            );
             if (isset($config['password'])) {
                 $this->conn->auth($config['password']);
             }

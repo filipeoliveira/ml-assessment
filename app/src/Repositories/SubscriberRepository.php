@@ -26,8 +26,8 @@ class SubscriberRepository
      * The results are paginated according to the provided page number and page size.
      * Each row of data is mapped to a Subscriber object.
      *
-     * @param int $page The page number to retrieve. Page numbers start at 1.
-     * @param int $pageSize The number of subscribers to retrieve per page.
+     * @param  int $page     The page number to retrieve. Page numbers start at 1.
+     * @param  int $pageSize The number of subscribers to retrieve per page.
      * @return array An array of Subscriber objects for the requested page and pagination metadata.
      * @throws DatabaseException If there is an error executing the database query.
      */
@@ -44,8 +44,10 @@ class SubscriberRepository
             // calculate the total number of pages
             $totalPages = ceil($totalSubscribers / $pageSize);
 
-            $stmt = $this->db->prepare("SELECT * FROM subscribers s
-                                        LIMIT :offset, :limit");
+            $stmt = $this->db->prepare(
+                "SELECT * FROM subscribers s
+                                        LIMIT :offset, :limit"
+            );
 
             $offset = ($page - 1) * $pageSize;
             $stmt->bindParam(':offset', $offset, \PDO::PARAM_INT);
@@ -76,7 +78,7 @@ class SubscriberRepository
     /**
      * Retrieves a subscriber by Email.
      *
-     * @param int $id The Email of the subscriber.
+     * @param  int $id The Email of the subscriber.
      * @return Subscriber|null The subscriber, or null if the subscriber was not found.
      */
     public function getByEmail($email)
@@ -94,8 +96,10 @@ class SubscriberRepository
 
         // If the subscriber was not found in the cache, retrieve it from the database
         try {
-            $stmt = $this->db->prepare("SELECT * FROM subscribers s
-                                        WHERE s.email = :email");
+            $stmt = $this->db->prepare(
+                "SELECT * FROM subscribers s
+                                        WHERE s.email = :email"
+            );
             $stmt->bindParam(':email', $email, \PDO::PARAM_STR);
             $stmt->execute();
             $data = $stmt->fetch();
@@ -118,7 +122,7 @@ class SubscriberRepository
     /**
      * Creates a new subscriber in the database.
      *
-     * @param Subscriber $subscriber The subscriber to create
+     * @param  Subscriber $subscriber The subscriber to create
      * @throws DatabaseException If there is an error executing the database queries.
      */
     public function create(Subscriber $subscriber)
@@ -146,7 +150,7 @@ class SubscriberRepository
     /**
      * Checks if a subscriber with the given email exists.
      *
-     * @param string $email The email to check.
+     * @param  string $email The email to check.
      * @return bool True if the subscriber exists, false otherwise.
      */
     private function subscriberExists($email)
@@ -159,27 +163,31 @@ class SubscriberRepository
     /**
      * Inserts a new subscriber into the database.
      *
-     * @param string $email The email of the subscriber.
-     * @param string $name The name of the subscriber.
+     * @param string $email    The email of the subscriber.
+     * @param string $name     The name of the subscriber.
      * @param string $lastName The last name of the subscriber.
-     * @param string $status The status of the subscriber.
+     * @param string $status   The status of the subscriber.
      */
     private function insertSubscriber($email, $name, $lastName, $status)
     {
-        $stmt = $this->db->prepare("INSERT INTO subscribers (email, name, last_name, status)
-        VALUES (:email, :name, :last_name, :status)");
-        $stmt->execute([
+        $stmt = $this->db->prepare(
+            "INSERT INTO subscribers (email, name, last_name, status)
+        VALUES (:email, :name, :last_name, :status)"
+        );
+        $stmt->execute(
+            [
             ':email' => $email,
             ':name' => $name,
             ':last_name' => $lastName,
             ':status' => $status
-        ]);
+            ]
+        );
     }
 
     /**
      * Maps raw database data to a Subscriber object.
      *
-     * @param array $data The raw data from the database, typically a row from a SELECT query.
+     * @param  array $data The raw data from the database, typically a row from a SELECT query.
      * @return Subscriber A Subscriber object containing the data from the provided array.
      */
     private function mapDataToSubscriber($data)
