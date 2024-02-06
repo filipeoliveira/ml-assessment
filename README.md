@@ -8,7 +8,6 @@ At MailerLite we store millions and millions of subscribers for our users. This 
 2. [Developer decisions](docs/decisions.md)
 3. [Data model](docs/tasks.md)
 4. [How to scale this project](docs/scalability.md)
-5. [Tests](docs/tests.md)
 
 ----------
 
@@ -30,11 +29,13 @@ It will download all the necessary docker images and will spin up the required b
 It's ready when the following message is presented:
 
 ```
-web-1          |    INFO  Server running on [http://0.0.0.0:8005].  
+redis         | * Ready to accept connections
+mailerlite-b  | [core:notice] [pid 1] AH00094: Command line: 'apache2 -D FOREGROUND'
+mysql         | [Note] mysqld: ready for connections.
 ...
 ```
 
-- Backend API is available through [127.0.0.1:8080/api/subscribers](http://0.0.0.0:8000/api/subscribers)
+- Backend API is available through [127.0.0.1:8080/api/subscribers](http://127.0.0.1:8000/api/subscribers)
 
 - Frontend web app is available through [127.0.0.1:8085](127.0.0.1:8085)
 

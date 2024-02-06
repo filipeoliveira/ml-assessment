@@ -1,6 +1,6 @@
 # Data model
 
-This section describes the Data model for each database (MySQL and Redis), which includes only the Subscriber entity.
+This section describes the Data model for each database (MySQL), which includes only the Subscriber entity.
 
 # MySQL data model
 
@@ -12,7 +12,7 @@ This section describes the Data model for each database (MySQL and Redis), which
   - `email`: Email of the subscriber `VARCHAR(255)`
   - `name`: Name of the subscriber `VARCHAR(255)`
   - `last_name`: Last name of the subscriber `VARCHAR(255)`
-  - `status`: Status of the subscriber `VARCHAR(255)`
+  - `status`: Status of the subscriber `VARCHAR(20)`
   - `created_at`: Creation timestamp of the subscriber
   - `updated_at`: Update timestamp of the subscriber
 
@@ -23,10 +23,8 @@ Check [Data model decisions](./decisions.md#data-model)
 
 ----------
 
--- TODO review this.
 # MySQL Database Storage Calculation
 
-Assuming that the statuses table will not grow a lot, and that would have around 100+- statuses for example. The grow factor of our database is basically the subscribers table.
 
 **TLDR**; `Subscriber row ≈ 784 bytes`
 
@@ -52,38 +50,26 @@ Assuming that the statuses table will not grow a lot, and that would have around
 Let's calculate the storage requirements for each row in `subscriber` tables (using MySQL 5.7):
 
 
-| Column      | Data Type  | Size (bytes) | Description |
-|-------------|------------|--------------|-------------|
-| email       | VARCHAR(255) | 256       | VARCHAR(255) requires up to 256 bytes (255 characters max and 1 byte for length prefix). An index on the email adds to the storage but is not calculated per row. |
+| Column      | Data Type    | Size (bytes) | Description |
+|-------------|--------------|--------------|-------------|
+| email       | VARCHAR(255) | 256       | VARCHAR(255) requires up to 256 bytes|
 | name        | VARCHAR(255) | 256       | VARCHAR(255) requires up to 256 bytes. |
 | last_name   | VARCHAR(255) | 256       | VARCHAR(255) requires up to 256 bytes. |
-| status   | INT        | 4            | INT requires 4 bytes. Links to the `statuses` table. |
-| created_at  | TIMESTAMP  | 4            | TIMESTAMP fields require 4 bytes each. |
-| updated_at  | TIMESTAMP  | 4            | TIMESTAMP fields require 4 bytes each. |
+| status      | VARCHAR(20)  | 21        | VARCHAR(255) requires up to 256 bytes |
+| created_at  | TIMESTAMP    | 4         | TIMESTAMP fields require 4 bytes each. |
+| updated_at  | TIMESTAMP    | 4         | TIMESTAMP fields require 4 bytes each. |
 
-**Total bytes per row for `subscriber`:** 784 bytes/row
+**Total bytes per row for `subscriber`:** 797 bytes/row
 
 #### Storage Calculation for 1MB, 100MB, and 1GB
 
 - **1MB (1,048,576 bytes) Capacity:**
-  - `subscriber`: 1,048,576 / 784 ≈ 1,337 rows
+  - `subscriber`: 1,048,576 / 797 ≈ 1,316 rows
 
 - **100MB (104,857,600 bytes) Capacity:**
-  - `subscriber`: 104,857,600 / 784 ≈ 133,754 rows
+  - `subscriber`: 104,857,600 / 797 ≈ 131,600 rows
 
 - **1GB (1,073,741,824 bytes) Capacity:**
-  - `subscriber`: 1,073,741,824 / 784 ≈ 1,369,156 rows
+  - `subscriber`: 1,073,741,824 / 797 ≈ 1,346,800 rows
 
 ----------
-
-# Redis Data Model
-- Stored as key-value pairs, where the key is the subscriber email and the value is the `subscriber` object.
-
-
-
-# Redis Database Storage Calculation
-- TODO
-
-
-
-

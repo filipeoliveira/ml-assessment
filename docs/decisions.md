@@ -10,13 +10,11 @@
 #### Fields: created_at and updated_at
 - I added `created_at` and `updated_at` fields to each table, this provides valuable information for debugging and auditing. They are not being populated or being returned to the user at the moment.
 
-####
-- `idx_subscribers_email` index was created at the email PK to speed up retrieval.
 
 #### Email as primary key
 - I'm using email as the primary key, being unique, to keep things simple for now. This guarantees that emails are unique and indexed.
 - A few improvements could be made here:
-   - We could use an ID field as primary key but using an *autoincrement ID* or a *email hash as the ID*. This could give us two benefits: Flexibility for the user to change their email if necessary and even more speed on the lookup (although this point might not be noticeable). 
+   - We could use an ID field as primary key but using an `autoincrement ID` or a `email hash as the ID`. This could give us two benefits: Flexibility for the user to change their email if necessary and even more speed on the lookup (although this point might not be noticeable). 
 
 #### Required fields an length
 - Considering the requirements, it wans't clear if the subscriber attributes could be optional, neither their max-length. So on this project it's assumed that `email`, `name`, `last_name` and `status` are required and have max-length of 255.
@@ -45,8 +43,6 @@
 #### Tests
 - Application currently has around 85% of unit test coverage considering lines, functions and methods.
 - Frontend application has no tests. I though it wasn't the focus of this assignment.
-- I prefered to dedicate more time on stress tests using [Locust](locust.io) than on integration or frontend tests. 
-- See more on [Tests](docs/tests.md)
 
 #### Frontend
 - I decided to use Vue3 with vue-router, typescript and eslint.
@@ -58,7 +54,9 @@
 - **App is using a custom debounce function to avoid multiple requests to the backend if the user spam clicks.**
 
 #### Create subscriber strategy
-- // TODO
+- Given the limited context for the usage of subscriber creation, particularly if the client needs to know if a subscriber already exists, the strategy I chose involves querying the database for the subscriber before trying an insert. **This is done within a transaction to ensure data consistency**. This approach is performant due to the email being the primary key and therefore index of the subscribers table.
+
+- An alternative would be to use MySQL's "INSERT IF NOT EXISTS" syntax (Available in MySQL 5.7) to only insert a new subscriber if one subscriber with the same email does not already exist. The problem here is that this approach doesnt provide feedback on whether the subscriber already existed.
 
 
 ----------
