@@ -35,7 +35,10 @@ mysql         | [Note] mysqld: ready for connections.
 ...
 ```
 
-- Backend API is available through [127.0.0.1:8080/api/subscribers](http://127.0.0.1:8000/api/subscribers)
+- Backend API is available through:
+  -  GET [127.0.0.1:8080/api/subscribers](http://127.0.0.1:8000/api/subscribers)
+  -  GET 127.0.0.1:8080/api/subscribers/{email}
+  -  POST 127.0.0.1:8080/api/subscribers
 
 - Frontend web app is available through [127.0.0.1:8085](127.0.0.1:8085)
 
